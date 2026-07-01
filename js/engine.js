@@ -26,11 +26,11 @@ class PromptEngine {
         if (outputFormat === "visual") {
             formatInstructions = `
 [VISUAL DATA REQUIREMENT - CRITICAL]
-Provide the output entirely in Visual HTML format so it can be rendered as a dashboard. 
-- Use HTML/CSS to create beautiful data tables, color-coded metric cards (green for positive, red for negative), and bar/line charts using basic HTML elements.
-- DO NOT provide long walls of text. 
-- The user must be able to understand the analysis at a glance through structured visual layouts (e.g., product breakups, earnings graphs).
-- Output valid HTML only.`;
+Provide the output ENTIRELY in raw HTML format.
+- Use HTML/CSS to create beautiful data tables, color-coded metric cards (green for positive, red for negative), and charts using basic HTML/CSS.
+- DO NOT provide walls of text. Ensure the user can understand the analysis at a glance.
+- OUTPUT ONLY THE RAW HTML CODE inside a single code block. Do not write introductory or concluding conversational text.
+- Tell the user: "Paste this code into the Prompt Architect HTML Visualizer to view your dashboard."`;
         } else {
             formatInstructions = `
 [TEXT FORMATTING REQUIREMENT]

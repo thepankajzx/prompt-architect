@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentCategory = null;
     let currentGenerator = null;
 
-    // DOM Elements
+    // DOM Elements - Generator View
     const categoryListEl = document.getElementById('category-list');
     const generatorListEl = document.getElementById('generator-list');
     const categoryTitleEl = document.getElementById('current-category-title');
@@ -24,11 +24,48 @@ document.addEventListener('DOMContentLoaded', () => {
     const formatRadios = document.getElementsByName('output_format');
     const freePlanWarning = document.getElementById('free-plan-warning');
 
+    // DOM Elements - Views
+    const viewGenerator = document.getElementById('view-generator');
+    const viewVisualizer = document.getElementById('view-visualizer');
+    const navVisualizer = document.getElementById('nav-visualizer');
+
+    // DOM Elements - Visualizer
+    const visualizerInput = document.getElementById('visualizer-input');
+    const visualizerFrame = document.getElementById('visualizer-frame');
+    const visualizerPlaceholder = document.getElementById('visualizer-placeholder');
+    const btnRender = document.getElementById('btn-render-html');
+    const btnDownload = document.getElementById('btn-download-html');
+
     // Initialization
     initCategories();
     if (promptData.categories.length > 0) {
         selectCategory(promptData.categories[0].id);
     }
+
+    // View Navigation Logic
+    function showGeneratorView() {
+        viewVisualizer.classList.add('hidden');
+        viewGenerator.classList.remove('hidden');
+        navVisualizer.classList.remove('active');
+        // Active class for category is handled in selectCategory
+    }
+
+    function showVisualizerView() {
+        viewGenerator.classList.add('hidden');
+        viewVisualizer.classList.remove('hidden');
+        viewVisualizer.classList.add('flex'); // Because flex is applied inline when visible
+        
+        // Remove active state from categories
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        navVisualizer.classList.add('active');
+        
+        categoryTitleEl.textContent = "Workspace Tools";
+    }
+
+    navVisualizer.addEventListener('click', (e) => {
+        e.preventDefault();
+        showVisualizerView();
+    });
 
     // Logic: Free Plan Warning for Visual HTML
     function updatePlanWarnings() {
@@ -57,6 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             a.addEventListener('click', (e) => {
                 e.preventDefault();
+                showGeneratorView();
                 selectCategory(category.id);
             });
             
@@ -67,12 +105,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function selectCategory(categoryId) {
         currentCategory = categoryId;
         
-        document.querySelectorAll('.nav-item').forEach(el => {
+        document.querySelectorAll('#category-list .nav-item').forEach(el => {
             el.classList.toggle('active', el.dataset.id === categoryId);
         });
 
         const categoryMeta = promptData.categories.find(c => c.id === categoryId);
-        categoryTitleEl.textContent = categoryMeta ? categoryMeta.title : 'Domain';
+        if (categoryMeta) {
+            categoryTitleEl.textContent = categoryMeta.title;
+        }
 
         renderGenerators(categoryId);
         clearWorkspace();
@@ -89,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         generators.forEach(gen => {
             const card = document.createElement('div');
-            card.className = 'generator-card bg-darkSurface border border-darkBorder rounded-xl p-5 mb-4 cursor-pointer relative overflow-hidden group';
+            card.className = 'generator-card bg-darkSurface border border-darkBorder rounded-xl p-5 mb-4 cursor-pointer relative overflow-hidden group shrink-0';
             card.dataset.id = gen.id;
             card.innerHTML = `
                 <div class="flex items-start">
@@ -202,6 +242,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 generateCopyBtn.classList.remove('bg-zinc-800', 'border', 'border-finGreen', 'text-finGreen');
             }, 3000);
         });
+    });
+
+    // --- HTML Visualizer Actions ---
+    
+    btnRender.addEventListener('click', () => {
+        const rawHtml = visualizerInput.value;
+        if (!rawHtml.trim()) return;
+
+        // Hide placeholder
+        visualizerPlaceholder.style.display = 'none';
+        
+        // Inject HTML into iframe via srcdoc
+        visualizerFrame.srcdoc = rawHtml;
+    });
+
+    btnDownload.addEventListener('click', () => {
+        const rawHtml = visualizerInput.value;
+        if (!rawHtml.trim()) {
+            alert('Please paste some HTML code first.');
+            return;
+        }
+
+        // Create Blob and trigger download
+        const blob = new Blob([rawHtml], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'financial_dashboard.html';
+        document.body.appendChild(a);
+        a.click();
+        
+        // Cleanup
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 100);
     });
 
 });
