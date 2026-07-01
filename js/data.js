@@ -1,111 +1,165 @@
 // js/data.js
 
 const promptData = {
-    // Defines the AI Models and their specific behavioral optimizations
+    // AI Models Logic
     aiModels: {
-        chatgpt: {
-            name: "ChatGPT",
-            rules: "Provide a highly structured response using HTML elements for clear formatting where appropriate. Provide strong, step-by-step reasoning before concluding. For complex metrics, present a detailed logical breakdown."
-        },
-        claude: {
-            name: "Claude",
-            rules: "Optimize for a long-form, logically organized report. Emphasize extremely detailed explanations and nuanced reasoning. Maintain strict professional tone and consistent formatting throughout."
-        },
-        gemini: {
-            name: "Gemini",
-            rules: "Follow instructions sequentially and explicitly. Return a complete, standalone HTML document containing the report. Do not include markdown wrappers around the HTML."
-        },
-        perplexity: {
-            name: "Perplexity",
-            rules: "Focus heavily on source-backed research. Cite public information prominently. Separate objective facts clearly from analytical interpretation."
-        },
-        grok: {
-            name: "Grok",
-            rules: "Optimize for concise, high-density analysis. Emphasize factual consistency, direct conclusions, and structured data over conversational filler."
-        }
+        chatgpt: { name: "ChatGPT", rules: "Provide highly structured analysis. Emphasize step-by-step reasoning." },
+        claude: { name: "Claude", rules: "Focus on long-form, deeply nuanced financial reporting. Maintain a highly professional, objective tone." },
+        gemini: { name: "Gemini", rules: "Follow instructions strictly and sequentially. Ensure accurate data retrieval." },
+        perplexity: { name: "Perplexity", rules: "Rely heavily on live, source-backed financial data. Cite all facts." }
     },
 
-    // Defines the Plans and their constraints
-    aiPlans: {
-        free: "Keep the final report concise and within standard context window limits. Prioritize the most critical data points over exhaustive depth.",
-        pro: "Leverage maximum context capabilities. Provide exhaustive, long-form reasoning, deep historical context, and comprehensive cross-referencing."
-    },
-
-    // Categories available in the sidebar
+    // Categories
     categories: [
-        { id: "fin-research", title: "Financial Research" },
-        { id: "content", title: "Content Creation" },
-        { id: "productivity", title: "Productivity" }
+        { id: "equity-research", title: "Equity Research", icon: "fa-chart-line" },
+        { id: "portfolio-mgmt", title: "Portfolio Mgmt", icon: "fa-pie-chart" },
+        { id: "risk-audit", title: "Risk & Audits", icon: "fa-shield-alt" },
+        { id: "macro-crypto", title: "Macro & Crypto", icon: "fa-globe" }
     ],
 
-    // Generators mapped to categories
+    // Generators
     generators: {
-        "fin-research": [
+        "equity-research": [
             {
-                id: "company-360",
-                title: "360° Company Research",
-                description: "Generates a prompt for a comprehensive fundamental and technical overview of a specific public company.",
-                version: "v1.2",
-                formFields: [
-                    { id: "companyName", label: "Company Name / Ticker", type: "text", placeholder: "e.g., Apple Inc. (AAPL)" },
-                    { id: "researchDepth", label: "Research Depth", type: "select", options: ["High-Level Overview", "Deep Fundamental Analysis", "Risk & Valuation Focus"] }
-                ],
-                // The base prompt logic specifically for financial research
-                baseTemplate: `I need a {researchDepth} for {companyName}.
-
-[FINANCIAL RESEARCH BEHAVIOR]
-- Use all available knowledge and enable web browsing/search if available.
-- Prioritize publicly available information, official SEC/investor filings, reliable financial metrics, industry context, and historical trends.
-- Clearly distinguish between historical facts, estimates, and analytical assumptions. Never fabricate financial metrics.
-- CRITICAL: If a specific data point cannot be retrieved, explicitly state "Data Not Available" instead of inventing values.
-- Do not stop the report because one metric is missing. Complete every possible section and mark unavailable information clearly.
-
-[EDUCATIONAL CONTEXT]
-- This report is intended strictly for financial education, learning, and analytical practice.
-- This is NOT personalized financial advice. Focus on objective analysis rather than investment recommendations.
-
-[REQUIRED SECTIONS]
-1. Executive Summary
-2. Core Business Model & Revenue Streams
-3. Recent Financial Performance (Revenue, Margins, Growth)
-4. Industry & Competitive Landscape
-5. Key Risks & Headwinds
-6. Valuation Context (if available)`
+                id: "360-roundup",
+                title: "360° Company Roundup",
+                description: "Complete overview of a stock's fundamentals, technicals, and sentiment.",
+                icon: "fa-eye",
+                version: "v2.0",
+                fields: [{ id: "companyName", label: "Company Ticker/Name", type: "text" }],
+                baseTemplate: `Perform a 360-degree financial roundup on {companyName}. Include recent earnings, management sentiment, key growth drivers, and primary headwinds.`
+            },
+            {
+                id: "fundamental-analysis",
+                title: "Fundamental Analysis",
+                description: "Deep dive into balance sheet, cash flows, and profitability ratios.",
+                icon: "fa-file-invoice-dollar",
+                version: "v2.0",
+                fields: [{ id: "companyName", label: "Company Ticker/Name", type: "text" }],
+                baseTemplate: `Conduct a deep fundamental analysis on {companyName}. Analyze the balance sheet strength, free cash flow generation, ROIC, and debt-to-equity metrics over the last 3 years.`
+            },
+            {
+                id: "technical-analysis",
+                title: "Technical Analysis",
+                description: "Analyze price action, moving averages, and momentum indicators.",
+                icon: "fa-chart-bar",
+                version: "v2.0",
+                fields: [{ id: "companyName", label: "Company Ticker/Name", type: "text" }, { id: "timeframe", label: "Timeframe", type: "select", options: ["Daily", "Weekly", "Monthly"] }],
+                baseTemplate: `Perform a technical analysis for {companyName} on a {timeframe} timeframe. Evaluate key support/resistance levels, moving average crossovers (50/200), RSI, and MACD.`
+            },
+            {
+                id: "dcf-valuation",
+                title: "DCF Valuation Model",
+                description: "Generate assumptions and outputs for a Discounted Cash Flow model.",
+                icon: "fa-calculator",
+                version: "v2.0",
+                fields: [{ id: "companyName", label: "Company Ticker/Name", type: "text" }],
+                baseTemplate: `Build a conceptual Discounted Cash Flow (DCF) valuation framework for {companyName}. Provide reasonable assumptions for WACC, Terminal Growth Rate, and projected Free Cash Flows based on current industry standards.`
+            },
+            {
+                id: "competitor-benchmarking",
+                title: "Competitor Benchmarking",
+                description: "Compare the company against its top 3 industry peers.",
+                icon: "fa-balance-scale",
+                version: "v2.0",
+                fields: [{ id: "companyName", label: "Company Ticker/Name", type: "text" }],
+                baseTemplate: `Create a competitor benchmarking matrix for {companyName}. Compare it against its top 3 direct competitors on metrics like P/E, EV/EBITDA, Gross Margin, and Revenue Growth.`
             }
         ],
-        "content": [
+        "portfolio-mgmt": [
             {
-                id: "blog-architect",
-                title: "SEO Blog Architect",
-                description: "Generates a prompt to outline and draft a highly-optimized, human-sounding blog post.",
-                version: "v1.0",
-                formFields: [
-                    { id: "topic", label: "Core Topic", type: "text", placeholder: "e.g., The Future of Remote Work" },
-                    { id: "targetAudience", label: "Target Audience", type: "text", placeholder: "e.g., Tech Startup Founders" }
-                ],
-                baseTemplate: `Act as an expert SEO Content Strategist. I need a comprehensive blog post on the topic of "{topic}" targeted towards "{targetAudience}".
-
-[CONTENT BEHAVIOR]
-- Ensure the tone is authoritative yet accessible.
-- Optimize headers for search intent.
-- Avoid generic AI filler words ("In conclusion", "In a world where").`
+                id: "portfolio-optimization",
+                title: "Portfolio Optimization",
+                description: "Analyze asset allocation and correlation matrices.",
+                icon: "fa-sitemap",
+                version: "v2.0",
+                fields: [{ id: "assets", label: "List of Assets (Tickers)", type: "text", placeholder: "AAPL, MSFT, SPY, GLD" }],
+                baseTemplate: `Analyze a portfolio consisting of the following assets: {assets}. Evaluate the diversification, historical correlation, and suggest potential weighting optimizations based on Modern Portfolio Theory.`
+            },
+            {
+                id: "dividend-health",
+                title: "Dividend Health Check",
+                description: "Analyze payout ratios and dividend growth sustainability.",
+                icon: "fa-coins",
+                version: "v2.0",
+                fields: [{ id: "companyName", label: "Company Ticker/Name", type: "text" }],
+                baseTemplate: `Assess the dividend safety and growth potential of {companyName}. Analyze the payout ratio, free cash flow coverage, and historical dividend CAGR.`
+            },
+            {
+                id: "options-strategy",
+                title: "Options Hedging Strategy",
+                description: "Generate protective put or covered call strategies.",
+                icon: "fa-sliders-h",
+                version: "v2.0",
+                fields: [{ id: "companyName", label: "Company Ticker/Name", type: "text" }, { id: "strategy", label: "Goal", type: "select", options: ["Downside Protection", "Income Generation"] }],
+                baseTemplate: `Design an options strategy for {companyName} focused on {strategy}. Explain the setup (strike selection, expiration timeframe), max risk, max reward, and breakeven points.`
             }
         ],
-        "productivity": [
+        "risk-audit": [
             {
-                id: "weekly-planner",
-                title: "Strategic Weekly Planner",
-                description: "Generates a prompt to organize raw tasks into a strategic, time-blocked weekly schedule.",
-                version: "v1.1",
-                formFields: [
-                    { id: "tasks", label: "Raw Task List (Comma separated)", type: "text", placeholder: "e.g., Finish report, Call client, Gym 3x" }
-                ],
-                baseTemplate: `Act as an Executive Productivity Coach. Organize the following tasks into a strategic weekly schedule: {tasks}.
-
-[PLANNING BEHAVIOR]
-- Use time-blocking principles.
-- Group similar tasks together (context switching reduction).
-- Suggest realistic time allocations.`
+                id: "red-flag-audit",
+                title: "Red Flag Audit",
+                description: "Identify accounting anomalies, debt risks, and management warnings.",
+                icon: "fa-flag text-red-500",
+                version: "v2.0",
+                fields: [{ id: "companyName", label: "Company Ticker/Name", type: "text" }],
+                baseTemplate: `Conduct a forensic Red Flag Audit on {companyName}. Look for warning signs such as rising accounts receivable vs revenue, declining margins, high insider selling, or excessive stock-based compensation.`
+            },
+            {
+                id: "green-flag-audit",
+                title: "Green Flag Audit",
+                description: "Highlight growth catalysts, moats, and positive indicators.",
+                icon: "fa-flag text-green-500",
+                version: "v2.0",
+                fields: [{ id: "companyName", label: "Company Ticker/Name", type: "text" }],
+                baseTemplate: `Conduct a Green Flag Audit on {companyName}. Highlight strong competitive moats, accelerating revenue growth, insider buying, or margin expansion trends.`
+            },
+            {
+                id: "earnings-call",
+                title: "Earnings Call Analysis",
+                description: "Extract sentiment and forward guidance from the latest earnings call.",
+                icon: "fa-microphone-alt",
+                version: "v2.0",
+                fields: [{ id: "companyName", label: "Company Ticker/Name", type: "text" }],
+                baseTemplate: `Analyze the most recent earnings call transcript for {companyName}. Extract the management's tone, forward guidance changes, and the most critical questions asked by analysts during the Q&A.`
+            },
+            {
+                id: "risk-management",
+                title: "Macro Risk Profiling",
+                description: "Assess Beta, VaR, and sensitivity to market shocks.",
+                icon: "fa-exclamation-triangle",
+                version: "v2.0",
+                fields: [{ id: "companyName", label: "Company Ticker/Name", type: "text" }],
+                baseTemplate: `Create a risk profile for {companyName}. Assess its Beta relative to the S&P 500, its sensitivity to interest rate hikes, and overall systemic risk exposure.`
+            },
+            {
+                id: "esg-scoring",
+                title: "ESG Impact Analysis",
+                description: "Evaluate Environmental, Social, and Governance factors.",
+                icon: "fa-leaf text-green-400",
+                version: "v2.0",
+                fields: [{ id: "companyName", label: "Company Ticker/Name", type: "text" }],
+                baseTemplate: `Provide an ESG (Environmental, Social, Governance) analysis for {companyName}. Highlight major controversies, carbon footprint goals, and board diversity metrics.`
+            }
+        ],
+        "macro-crypto": [
+            {
+                id: "macro-economic",
+                title: "Macro-Economic Impact",
+                description: "Analyze how inflation, rates, and GDP affect a sector.",
+                icon: "fa-globe-americas",
+                version: "v2.0",
+                fields: [{ id: "sector", label: "Sector/Industry", type: "text", placeholder: "e.g., Real Estate, Tech" }],
+                baseTemplate: `Analyze the current macroeconomic impact on the {sector} sector. Focus on how current interest rates, inflation data, and consumer spending trends are affecting margins and valuations in this space.`
+            },
+            {
+                id: "crypto-tokenomics",
+                title: "Crypto Tokenomics",
+                description: "Evaluate supply/demand, utility, and inflation of a token.",
+                icon: "fa-bitcoin",
+                version: "v2.0",
+                fields: [{ id: "tokenName", label: "Token Name/Symbol", type: "text", placeholder: "e.g., Ethereum (ETH)" }],
+                baseTemplate: `Perform a deep Tokenomics analysis on {tokenName}. Evaluate its total vs circulating supply, utility drivers, staking rewards, inflation/deflation mechanisms, and holder distribution.`
             }
         ]
     }

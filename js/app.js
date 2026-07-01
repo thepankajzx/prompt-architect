@@ -2,69 +2,79 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     
-    // --- State ---
     let currentCategory = null;
     let currentGenerator = null;
 
-    // --- DOM Elements ---
+    // DOM Elements
     const categoryListEl = document.getElementById('category-list');
     const generatorListEl = document.getElementById('generator-list');
     const categoryTitleEl = document.getElementById('current-category-title');
     
+    const emptyState = document.getElementById('empty-state');
     const configSection = document.getElementById('config-section');
-    const emptyState = document.getElementById('empty-workspace-state');
-    const outputSection = document.getElementById('output-section');
-    const configForm = document.getElementById('prompt-config-form');
     const generatorTitleEl = document.getElementById('current-generator-title');
     const outputVersionBadge = document.getElementById('output-version-badge');
-    const promptOutput = document.getElementById('prompt-output');
+    const configForm = document.getElementById('prompt-config-form');
     
-    const generateBtn = document.getElementById('generate-btn');
-    const copyBtn = document.getElementById('copy-btn');
+    const hiddenPromptStorage = document.getElementById('hidden-prompt-storage');
+    const generateCopyBtn = document.getElementById('generate-copy-btn');
+    
     const modelSelect = document.getElementById('ai-model-select');
     const planSelect = document.getElementById('ai-plan-select');
+    const formatRadios = document.getElementsByName('output_format');
+    const freePlanWarning = document.getElementById('free-plan-warning');
 
-    // --- Initialization ---
+    // Initialization
     initCategories();
-
-    // Select first category by default
     if (promptData.categories.length > 0) {
         selectCategory(promptData.categories[0].id);
     }
 
-    // --- Core Functions ---
+    // Logic: Free Plan Warning for Visual HTML
+    function updatePlanWarnings() {
+        const isFree = planSelect.value === 'free';
+        const isVisual = document.querySelector('input[name="output_format"]:checked').value === 'visual';
+        
+        if (isFree && isVisual) {
+            freePlanWarning.classList.remove('hidden');
+        } else {
+            freePlanWarning.classList.add('hidden');
+        }
+    }
 
+    planSelect.addEventListener('change', updatePlanWarnings);
+    formatRadios.forEach(radio => radio.addEventListener('change', updatePlanWarnings));
+
+    // Core Functions
     function initCategories() {
         promptData.categories.forEach(category => {
-            const li = document.createElement('li');
-            li.className = 'category-item';
-            li.textContent = category.title;
-            li.dataset.id = category.id;
+            const a = document.createElement('a');
+            a.href = '#';
+            a.className = 'nav-item flex items-center px-4 py-3 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors';
+            a.dataset.id = category.id;
             
-            li.addEventListener('click', () => {
+            a.innerHTML = `<i class="fas ${category.icon} w-6 text-center mr-2"></i> ${category.title}`;
+            
+            a.addEventListener('click', (e) => {
+                e.preventDefault();
                 selectCategory(category.id);
             });
             
-            categoryListEl.appendChild(li);
+            categoryListEl.appendChild(a);
         });
     }
 
     function selectCategory(categoryId) {
         currentCategory = categoryId;
         
-        // Update active styling
-        document.querySelectorAll('.category-item').forEach(el => {
+        document.querySelectorAll('.nav-item').forEach(el => {
             el.classList.toggle('active', el.dataset.id === categoryId);
         });
 
-        // Update title
         const categoryMeta = promptData.categories.find(c => c.id === categoryId);
-        categoryTitleEl.textContent = categoryMeta ? categoryMeta.title : 'Select a Domain';
+        categoryTitleEl.textContent = categoryMeta ? categoryMeta.title : 'Domain';
 
-        // Render Generators
         renderGenerators(categoryId);
-        
-        // Reset workspace
         clearWorkspace();
     }
 
@@ -73,17 +83,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const generators = promptData.generators[categoryId] || [];
 
         if (generators.length === 0) {
-            generatorListEl.innerHTML = '<p style="color: var(--text-muted); font-size: 13px;">No generators available yet.</p>';
+            generatorListEl.innerHTML = '<p class="text-zinc-500 text-sm">No tools available yet.</p>';
             return;
         }
 
         generators.forEach(gen => {
             const card = document.createElement('div');
-            card.className = 'generator-card';
+            card.className = 'generator-card bg-darkSurface border border-darkBorder rounded-xl p-5 mb-4 cursor-pointer relative overflow-hidden group';
             card.dataset.id = gen.id;
             card.innerHTML = `
-                <h4>${gen.title} <span style="font-size: 10px; color: var(--accent-primary); opacity: 0.8; margin-left: 4px;">${gen.version}</span></h4>
-                <p>${gen.description}</p>
+                <div class="flex items-start">
+                    <div class="mt-1 w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center border border-zinc-700 text-zinc-400 group-hover:text-finGreen transition-colors">
+                        <i class="fas ${gen.icon}"></i>
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <h4 class="text-zinc-100 font-semibold text-sm mb-1">${gen.title}</h4>
+                        <p class="text-xs text-zinc-400 leading-relaxed">${gen.description}</p>
+                    </div>
+                </div>
             `;
             
             card.addEventListener('click', () => {
@@ -97,32 +114,27 @@ document.addEventListener('DOMContentLoaded', () => {
     function selectGenerator(generator, cardElement) {
         currentGenerator = generator;
         
-        // Active styling
         document.querySelectorAll('.generator-card').forEach(el => el.classList.remove('active'));
         if (cardElement) cardElement.classList.add('active');
 
-        // Update Workspace Header
         generatorTitleEl.textContent = generator.title;
         outputVersionBadge.textContent = generator.version;
 
-        // Render Config Form
         renderConfigForm(generator);
 
-        // Show config, hide empty state & output
         emptyState.style.display = 'none';
-        outputSection.style.display = 'none';
-        configSection.style.display = 'block';
+        configSection.style.display = 'flex';
     }
 
     function renderConfigForm(generator) {
         configForm.innerHTML = '';
         
-        generator.formFields.forEach(field => {
+        generator.fields.forEach(field => {
             const group = document.createElement('div');
-            group.className = 'form-group';
             
             const label = document.createElement('label');
             label.htmlFor = field.id;
+            label.className = 'block text-xs font-medium text-zinc-400 mb-1';
             label.textContent = field.label;
             group.appendChild(label);
 
@@ -131,10 +143,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 input.type = 'text';
                 input.id = field.id;
                 input.placeholder = field.placeholder || '';
+                input.className = 'w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-300 focus:outline-none focus:border-finGreen focus:ring-1 focus:ring-finGreen transition-colors';
                 group.appendChild(input);
             } else if (field.type === 'select') {
                 const select = document.createElement('select');
                 select.id = field.id;
+                select.className = 'w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-300 focus:outline-none focus:border-finGreen transition-colors';
                 field.options.forEach(opt => {
                     const option = document.createElement('option');
                     option.value = opt;
@@ -151,54 +165,42 @@ document.addEventListener('DOMContentLoaded', () => {
     function clearWorkspace() {
         currentGenerator = null;
         configSection.style.display = 'none';
-        outputSection.style.display = 'none';
         emptyState.style.display = 'flex';
-        generatorTitleEl.textContent = 'Workspace';
     }
 
-    // --- Actions ---
-
-    generateBtn.addEventListener('click', () => {
+    // Generate & Copy Action
+    generateCopyBtn.addEventListener('click', () => {
         if (!currentGenerator) return;
 
-        // Gather form data
+        // Gather Data
         const formData = {};
-        currentGenerator.formFields.forEach(field => {
+        currentGenerator.fields.forEach(field => {
             const element = document.getElementById(field.id);
             if (element) {
                 formData[field.id] = element.value;
             }
         });
 
-        // Get AI settings
         const aiModel = modelSelect.value;
         const aiPlan = planSelect.value;
+        const outputFormat = document.querySelector('input[name="output_format"]:checked').value;
 
-        // Use Engine to generate prompt
-        const finalPrompt = PromptEngine.generate(currentGenerator, formData, aiModel, aiPlan);
+        // Generate
+        const finalPrompt = PromptEngine.generate(currentGenerator, formData, aiModel, aiPlan, outputFormat);
 
-        // Display output
-        promptOutput.value = finalPrompt;
-        outputSection.style.display = 'flex';
-        
-        // Scroll to output
-        outputSection.scrollIntoView({ behavior: 'smooth' });
-    });
-
-    copyBtn.addEventListener('click', () => {
-        if (!promptOutput.value) return;
-        
-        navigator.clipboard.writeText(promptOutput.value).then(() => {
-            const originalText = copyBtn.innerHTML;
-            copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!';
-            copyBtn.style.color = '#3fb950';
-            copyBtn.style.borderColor = '#3fb950';
+        // Copy to Clipboard (Hidden)
+        navigator.clipboard.writeText(finalPrompt).then(() => {
+            // Visual feedback
+            const originalContent = generateCopyBtn.innerHTML;
+            generateCopyBtn.innerHTML = '<i class="fas fa-check-circle"></i><span>Copied to Clipboard!</span>';
+            generateCopyBtn.classList.remove('from-finGreen', 'to-emerald-600');
+            generateCopyBtn.classList.add('bg-zinc-800', 'border', 'border-finGreen', 'text-finGreen');
             
             setTimeout(() => {
-                copyBtn.innerHTML = originalText;
-                copyBtn.style.color = '';
-                copyBtn.style.borderColor = '';
-            }, 2000);
+                generateCopyBtn.innerHTML = originalContent;
+                generateCopyBtn.classList.add('from-finGreen', 'to-emerald-600');
+                generateCopyBtn.classList.remove('bg-zinc-800', 'border', 'border-finGreen', 'text-finGreen');
+            }, 3000);
         });
     });
 
