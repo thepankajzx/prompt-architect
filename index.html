@@ -79,6 +79,10 @@
             <span class="font-bold text-lg tracking-tight text-zinc-900 dark:text-white">Prompt <span class="text-accent">Architect</span></span>
         </div>
         <div class="flex items-center space-x-3 md:space-x-4">
+            <!-- Premium CTA -->
+            <a href="https://wa.me/7018168156?text=Hi!%20I%20want%20to%20subscribe%20to%20the%20Premium%20version%20of%20the%20AI%20Financial%20Research%20Architect.%20Please%20share%20the%20details." target="_blank" class="hidden sm:flex items-center bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-bold px-4 py-2 rounded-full text-xs hover:scale-105 transition-transform shadow-[0_0_15px_rgba(202,138,4,0.4)] hover:shadow-[0_0_20px_rgba(202,138,4,0.6)] animate-[pulse_3s_infinite]">
+                <i class="fas fa-crown mr-1.5"></i> Premium
+            </a>
             <!-- Theme Toggle -->
             <button id="theme-toggle" class="w-9 h-9 rounded-full flex items-center justify-center bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 transition-colors">
                 <i class="fas fa-moon dark:hidden"></i>
@@ -87,9 +91,6 @@
             <button id="nav-visualizer" class="text-xs font-medium px-3 md:px-4 py-2 bg-white hover:bg-zinc-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-700 dark:text-zinc-300 transition-colors shadow-sm dark:shadow-none">
                 <i class="fas fa-laptop-code mr-1 md:mr-2"></i> <span class="hidden md:inline">HTML Visualizer</span>
             </button>
-            <span class="hidden sm:inline-flex text-xs font-medium px-3 py-1 bg-finGreen/10 border border-finGreen/20 rounded-full text-finGreen items-center">
-                <i class="fas fa-check-circle mr-1"></i> Pro v3.2
-            </span>
         </div>
     </header>
 
@@ -145,18 +146,29 @@
         </section>
 
         <!-- Floating Continue Button (State 2) -->
-        <div id="floating-continue-container" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 hidden fade-in w-full max-w-xs px-4">
-            <button id="btn-continue-2" class="w-full bg-accent/90 backdrop-blur-md hover:bg-accent text-white px-6 py-4 rounded-full font-bold text-base shadow-[0_10px_25px_rgba(37,99,235,0.4)] transition-all flex items-center justify-center">
-                Continue (<span id="cat-count">1</span>) <i class="fas fa-arrow-right ml-2"></i>
+        <div id="floating-continue-container" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 hidden fade-in flex justify-center items-center w-full pointer-events-none">
+            <button id="btn-continue-2" class="pointer-events-auto bg-slate-900/80 dark:bg-slate-800/80 backdrop-blur-md border border-white/10 dark:border-white/5 text-white px-10 py-3.5 rounded-full font-semibold text-sm md:text-base shadow-[0_8px_30px_rgba(15,23,42,0.3)] hover:shadow-[0_10px_40px_rgba(15,23,42,0.4)] hover:-translate-y-1 hover:bg-slate-900/90 dark:hover:bg-slate-800/95 active:scale-95 transition-all duration-200 flex items-center justify-center">
+                Continue
             </button>
         </div>
 
-        <!-- Toast notification for max limit -->
-        <div id="max-cat-toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-finRed text-white px-5 py-3 rounded-xl shadow-2xl transition-opacity duration-300 opacity-0 pointer-events-none z-[100] text-sm md:text-base whitespace-nowrap">
-            <i class="fas fa-exclamation-triangle mr-2"></i> Max 2 categories allowed.
+        <!-- Premium Toast Notifications -->
+        <div id="max-cat-toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-white dark:bg-darkSurface border border-yellow-500/30 p-4 rounded-xl shadow-2xl transition-all duration-300 opacity-0 pointer-events-none z-[100] max-w-sm w-[90%] text-center">
+            <div class="text-finGold text-2xl mb-2"><i class="fas fa-crown"></i></div>
+            <h4 class="font-bold text-zinc-900 dark:text-white mb-1">Unlock Premium</h4>
+            <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4">Free Plan allows up to 2 Major Categories. Upgrade to Premium for unlimited research combinations.</p>
+            <a href="https://wa.me/7018168156?text=Hi!%20I%20want%20to%20subscribe%20to%20the%20Premium%20version%20of%20the%20AI%20Financial%20Research%20Architect.%20Please%20share%20the%20details." target="_blank" class="inline-block w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-bold py-2 rounded-lg text-sm hover:scale-[1.02] transition-transform shadow-[0_0_15px_rgba(202,138,4,0.3)] pointer-events-auto">
+                Subscribe to Premium
+            </a>
         </div>
-        <div id="premium-toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-finGold text-zinc-900 px-5 py-3 rounded-xl shadow-2xl transition-opacity duration-300 opacity-0 pointer-events-none z-[100] text-sm md:text-base whitespace-nowrap font-medium">
-            <i class="fas fa-crown mr-2"></i> Pro: Max 5 custom modules allowed.
+        
+        <div id="premium-toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-white dark:bg-darkSurface border border-yellow-500/30 p-4 rounded-xl shadow-2xl transition-all duration-300 opacity-0 pointer-events-none z-[100] max-w-sm w-[90%] text-center">
+            <div class="text-finGold text-2xl mb-2"><i class="fas fa-crown"></i></div>
+            <h4 class="font-bold text-zinc-900 dark:text-white mb-1">Unlock Premium</h4>
+            <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4">Free Plan allows up to 5 Mini Tabs. Upgrade to Premium to unlock unlimited prompt combinations.</p>
+            <a href="https://wa.me/7018168156?text=Hi!%20I%20want%20to%20subscribe%20to%20the%20Premium%20version%20of%20the%20AI%20Financial%20Research%20Architect.%20Please%20share%20the%20details." target="_blank" class="inline-block w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-bold py-2 rounded-lg text-sm hover:scale-[1.02] transition-transform shadow-[0_0_15px_rgba(202,138,4,0.3)] pointer-events-auto">
+                Subscribe to Premium
+            </a>
         </div>
 
         <!-- ========================================== -->

@@ -44,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const categoryGrid = document.getElementById('category-grid');
     const btnContinue2 = document.getElementById('btn-continue-2');
     const floatingContinueContainer = document.getElementById('floating-continue-container');
-    const catCountSpan = document.getElementById('cat-count');
     
     // Toasts
     const maxCatToast = document.getElementById('max-cat-toast');
@@ -219,7 +218,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (count > 0) {
-            catCountSpan.textContent = count;
             floatingContinueContainer.classList.remove('hidden');
         } else {
             floatingContinueContainer.classList.add('hidden');
@@ -233,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
         el.classList.remove('opacity-0', 'pointer-events-none');
         setTimeout(() => {
             el.classList.add('opacity-0', 'pointer-events-none');
-        }, 3000);
+        }, 5000);
     }
 
     function renderMiniTabs() {
@@ -296,8 +294,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     appState.selectedMiniTabs.splice(exists, 1);
                     chip.classList.remove('selected');
                 } else {
-                    // Limit to 5 if in Custom Mode
-                    if (isCustomMode && appState.selectedMiniTabs.length >= 5) {
+                    // Limit to 5 mini-tabs universally
+                    if (appState.selectedMiniTabs.length >= 5) {
                         showToast(premiumToast);
                         chip.style.animation = 'shake 0.4s';
                         setTimeout(() => chip.style.animation = '', 400);
