@@ -80,8 +80,11 @@
         </div>
         <div class="flex items-center space-x-3 md:space-x-4">
             <!-- Premium CTA -->
-            <a href="https://wa.me/7018168156?text=Hi!%20I%20want%20to%20subscribe%20to%20the%20Premium%20version%20of%20the%20AI%20Financial%20Research%20Architect.%20Please%20share%20the%20details." target="_blank" class="hidden sm:flex items-center bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-bold px-4 py-2 rounded-full text-xs hover:scale-105 transition-transform shadow-[0_0_15px_rgba(202,138,4,0.4)] hover:shadow-[0_0_20px_rgba(202,138,4,0.6)] animate-[pulse_3s_infinite]">
-                <i class="fas fa-crown mr-1.5"></i> Premium
+            <a href="https://wa.me/7018168156?text=Hi!%20I%20want%20to%20subscribe%20to%20the%20Premium%20version%20of%20the%20AI%20Financial%20Research%20Architect.%20Please%20share%20the%20details." target="_blank" class="hidden sm:flex items-center bg-gradient-to-r from-[#FCEEAC] via-[#D4AF37] to-[#B8860B] text-zinc-900 font-semibold px-5 py-2 rounded-full text-xs md:text-sm border border-[#FCEEAC]/40 hover:scale-[1.03] hover:-translate-y-0.5 transition-all duration-300 shadow-[0_4px_15px_rgba(212,175,55,0.4)] hover:shadow-[0_8px_25px_rgba(212,175,55,0.6)] relative overflow-hidden group">
+                <!-- Metallic Highlight -->
+                <div class="absolute inset-0 bg-gradient-to-b from-white/50 to-transparent rounded-full pointer-events-none"></div>
+                <i class="fas fa-crown mr-2 relative z-10 text-black"></i> 
+                <span class="relative z-10 text-black tracking-wide">Premium</span>
             </a>
             <!-- Theme Toggle -->
             <button id="theme-toggle" class="w-9 h-9 rounded-full flex items-center justify-center bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 transition-colors">
@@ -146,9 +149,12 @@
         </section>
 
         <!-- Floating Continue Button (State 2) -->
-        <div id="floating-continue-container" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 hidden fade-in flex justify-center items-center w-full pointer-events-none">
-            <button id="btn-continue-2" class="pointer-events-auto bg-slate-900/80 dark:bg-slate-800/80 backdrop-blur-md border border-white/10 dark:border-white/5 text-white px-10 py-3.5 rounded-full font-semibold text-sm md:text-base shadow-[0_8px_30px_rgba(15,23,42,0.3)] hover:shadow-[0_10px_40px_rgba(15,23,42,0.4)] hover:-translate-y-1 hover:bg-slate-900/90 dark:hover:bg-slate-800/95 active:scale-95 transition-all duration-200 flex items-center justify-center">
-                Continue
+        <div id="floating-continue-container" class="fixed bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 z-50 hidden fade-in flex justify-center items-center w-full pointer-events-none px-4">
+            <button id="btn-continue-2" class="pointer-events-auto group bg-gradient-to-r from-blue-600 to-blue-900/95 backdrop-blur-md border border-white/10 text-white pl-8 pr-2 py-2 rounded-full font-semibold text-sm md:text-base shadow-[0_8px_25px_rgba(37,99,235,0.35)] hover:shadow-[0_12px_35px_rgba(37,99,235,0.45)] hover:-translate-y-1 hover:brightness-110 active:scale-95 active:shadow-[0_4px_15px_rgba(37,99,235,0.3)] transition-all duration-250 flex items-center justify-center gap-6">
+                <span class="tracking-wide">Continue</span>
+                <span class="bg-white w-10 h-10 rounded-full flex items-center justify-center text-zinc-900 shadow-md group-hover:translate-x-1.5 transition-transform duration-300">
+                    <i class="fas fa-arrow-right"></i>
+                </span>
             </button>
         </div>
 
