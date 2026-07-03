@@ -9,11 +9,11 @@ const promptDataPart1 = {
     },
 
     categories: [
-        { id: "fundamental", title: "Fundamental Analysis", icon: "fa-file-invoice-dollar", desc: "Comprehensive financial & business quality analysis." },
-        { id: "technical", title: "Technical Analysis", icon: "fa-chart-line", desc: "Professional market & chart analysis." },
-        { id: "valuation", title: "Valuation", icon: "fa-calculator", desc: "Intrinsic value & pricing analysis." },
-        { id: "risk", title: "Risk Analysis", icon: "fa-shield-alt", desc: "Business, financial & macro risk assessment." },
-        { id: "green-flags", title: "Green Flags", icon: "fa-flag text-green-500", desc: "Positive investment indicators & catalysts." }
+        { id: "fundamental", title: "Fundamental Analysis", icon: "fa-file-invoice-dollar", colorClass: "text-emerald-500", desc: "Comprehensive financial & business quality analysis." },
+        { id: "technical", title: "Technical Analysis", icon: "fa-chart-line", colorClass: "text-blue-500", desc: "Professional market & chart analysis." },
+        { id: "valuation", title: "Valuation", icon: "fa-calculator", colorClass: "text-purple-500", desc: "Intrinsic value & pricing analysis." },
+        { id: "risk", title: "Risk Analysis", icon: "fa-shield-alt", colorClass: "text-orange-500", desc: "Business, financial & macro risk assessment." },
+        { id: "green-flags", title: "Green Flags", icon: "fa-flag", colorClass: "text-green-500", desc: "Positive investment indicators & catalysts." }
     ],
 
     modules: {

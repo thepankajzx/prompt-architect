@@ -2,11 +2,11 @@
 
 const promptDataPart2 = {
     categories: [
-        { id: "red-flags", title: "Red Flags", icon: "fa-flag text-red-500", desc: "Critical warning signals & accounting concerns." },
-        { id: "earnings", title: "Earnings & Performance", icon: "fa-chart-pie", desc: "Quarterly & annual business performance." },
-        { id: "business", title: "Business & Moat", icon: "fa-chess-knight", desc: "Competitive advantages & strategic positioning." },
-        { id: "thesis", title: "Investment Thesis", icon: "fa-balance-scale", desc: "Bull case, bear case & final investment opinion." },
-        { id: "custom", title: "Custom Research", icon: "fa-flask", desc: "Custom institutional research request." }
+        { id: "red-flags", title: "Red Flags", icon: "fa-flag", colorClass: "text-red-500", desc: "Critical warning signals & accounting concerns." },
+        { id: "earnings", title: "Earnings & Performance", icon: "fa-chart-pie", colorClass: "text-yellow-500", desc: "Quarterly & annual business performance." },
+        { id: "business", title: "Business & Moat", icon: "fa-chess-knight", colorClass: "text-indigo-500", desc: "Competitive advantages & strategic positioning." },
+        { id: "thesis", title: "Investment Thesis", icon: "fa-balance-scale", colorClass: "text-teal-500", desc: "Bull case, bear case & final investment opinion." },
+        { id: "custom", title: "Custom Research", icon: "fa-flask", colorClass: "text-pink-500", desc: "Custom institutional research request." }
     ],
 
     modules: {
