@@ -1,27 +1,37 @@
 // js/engine.js
 
 class PromptEngine {
-    static generate(generator, formData, aiModelId, aiPlanId, outputFormat) {
-        let prompt = generator.baseTemplate;
+    static generate(ticker, selectedModules, aiModelId, aiPlanId, outputFormat) {
+        
+        // 1. Gather all unique expert roles
+        const roles = [...new Set(selectedModules.map(m => m.expertRole))].join(" and ");
+        
+        // 2. Gather all objectives (replace {companyName} with the actual ticker)
+        const objectives = selectedModules.map(m => m.objective.replace(/{companyName}/g, ticker))
+            .map(obj => `• ${obj}`)
+            .join("\n");
+            
+        // 3. Gather all required metrics
+        const metrics = selectedModules.map(m => m.metrics)
+            .map(m => `• ${m}`)
+            .join("\n");
+            
+        // 4. Gather all analysis frameworks
+        const frameworks = selectedModules.map(m => m.framework)
+            .map(f => `• ${f}`)
+            .join("\n");
 
-        // 1. Replace variables in the base template with user inputs
-        for (const [key, value] of Object.entries(formData)) {
-            const regex = new RegExp(`{${key}}`, 'g');
-            const safeValue = value.trim() !== '' ? value : `[INSERT ${key.toUpperCase()}]`;
-            prompt = prompt.replace(regex, safeValue);
-        }
-
-        // 2. Fetch AI Model specific rules and Plan constraints
+        // 5. Fetch AI Model specific rules and Plan constraints
         const modelRules = promptData.aiModels[aiModelId]?.rules || "";
         
         let planRules = "";
         if (aiPlanId === "free") {
-            planRules = "Keep the final report concise and within standard context window limits. Prioritize the most critical data points.";
+            planRules = "Keep the final report concise and within standard context window limits. Prioritize only the most critical data points.";
         } else {
-            planRules = "Leverage maximum context capabilities. Provide exhaustive reasoning and deep historical context.";
+            planRules = "Leverage maximum context capabilities. Provide exhaustive reasoning, deep historical context, and comprehensive multi-factor analysis.";
         }
 
-        // 3. Output Format Logic (Visual vs Text)
+        // 6. Output Format Logic (Visual vs Text)
         let formatInstructions = "";
         if (outputFormat === "visual") {
             formatInstructions = `
@@ -34,12 +44,29 @@ Provide the output ENTIRELY in raw HTML format.
         } else {
             formatInstructions = `
 [TEXT FORMATTING REQUIREMENT]
-Provide a well-structured, highly readable text report. Use Markdown headings, bullet points, and bold text for emphasis. Ensure it is easy to read.`;
+Provide a well-structured, highly readable text report. Use Markdown headings, bullet points, and bold text for emphasis. Ensure it is easy to read and follows a logical flow.`;
         }
 
-        // 4. Assemble the final prompt structure
+        // 7. Assemble the final Master Prompt
         const finalPrompt = `
-${prompt}
+[TARGET ASSET]
+Company / Ticker: ${ticker}
+
+[EXPERT PERSONA]
+Assume the combined roles of a ${roles}. 
+Your analysis must be institutional-grade, evidence-based, and highly analytical. Do not use generic AI language.
+
+[RESEARCH OBJECTIVES]
+You are tasked with the following primary objectives:
+${objectives}
+
+[REQUIRED METRICS]
+You must calculate, estimate, or reference the following metrics in your analysis:
+${metrics}
+
+[ANALYSIS FRAMEWORK]
+Follow these specific analytical frameworks to conduct your research:
+${frameworks}
 
 ---
 [AI MODEL SPECIFIC INSTRUCTIONS: ${promptData.aiModels[aiModelId]?.name.toUpperCase() || "GENERIC"}]

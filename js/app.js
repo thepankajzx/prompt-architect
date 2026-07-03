@@ -2,258 +2,302 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     
-    let currentCategory = null;
-    let currentGenerator = null;
+    // --- State Management ---
+    let appState = {
+        ticker: "",
+        selectedCategories: [], // max 2
+        selectedMiniTabs: []    // unlimited
+    };
 
-    // DOM Elements - Generator View
-    const categoryListEl = document.getElementById('category-list');
-    const generatorListEl = document.getElementById('generator-list');
-    const categoryTitleEl = document.getElementById('current-category-title');
+    // --- DOM Elements ---
+    const state1 = document.getElementById('state-1');
+    const state2 = document.getElementById('state-2');
+    const state3 = document.getElementById('state-3');
+    const stateVisualizer = document.getElementById('state-visualizer');
     
-    const emptyState = document.getElementById('empty-state');
-    const configSection = document.getElementById('config-section');
-    const generatorTitleEl = document.getElementById('current-generator-title');
-    const outputVersionBadge = document.getElementById('output-version-badge');
-    const configForm = document.getElementById('prompt-config-form');
+    // Inputs & Buttons
+    const tickerInput = document.getElementById('ticker-input');
+    const btnContinue1 = document.getElementById('btn-continue-1');
+    const tickerError = document.getElementById('ticker-error');
     
-    const hiddenPromptStorage = document.getElementById('hidden-prompt-storage');
-    const generateCopyBtn = document.getElementById('generate-copy-btn');
+    const categoryGrid = document.getElementById('category-grid');
+    const btnContinue2 = document.getElementById('btn-continue-2');
+    const catCountSpan = document.getElementById('cat-count');
+    const maxCatToast = document.getElementById('max-cat-toast');
     
+    const miniTabsContainer = document.getElementById('mini-tabs-container');
+    const btnGenerate = document.getElementById('generate-copy-btn');
+    const miniTabError = document.getElementById('mini-tab-error');
+    
+    // Displays & Edits
+    const displayTicker2 = document.getElementById('display-ticker');
+    const displayTicker3 = document.getElementById('display-ticker-3');
+    const displayCategories = document.getElementById('display-categories');
+    
+    const btnEditTicker = document.getElementById('btn-edit-ticker');
+    const btnEditCategories = document.getElementById('btn-edit-categories');
+
+    // Visualizer
+    const navVisualizer = document.getElementById('nav-visualizer');
+    const btnCloseVisualizer = document.getElementById('btn-close-visualizer');
+    const btnRender = document.getElementById('btn-render-html');
+    const btnDownload = document.getElementById('btn-download-html');
+    const visualizerInput = document.getElementById('visualizer-input');
+    const visualizerFrame = document.getElementById('visualizer-frame');
+    const visualizerPlaceholder = document.getElementById('visualizer-placeholder');
+    
+    // AI Settings
     const modelSelect = document.getElementById('ai-model-select');
     const planSelect = document.getElementById('ai-plan-select');
     const formatRadios = document.getElementsByName('output_format');
     const freePlanWarning = document.getElementById('free-plan-warning');
 
-    // DOM Elements - Views
-    const viewGenerator = document.getElementById('view-generator');
-    const viewVisualizer = document.getElementById('view-visualizer');
-    const navVisualizer = document.getElementById('nav-visualizer');
-
-    // DOM Elements - Visualizer
-    const visualizerInput = document.getElementById('visualizer-input');
-    const visualizerFrame = document.getElementById('visualizer-frame');
-    const visualizerPlaceholder = document.getElementById('visualizer-placeholder');
-    const btnRender = document.getElementById('btn-render-html');
-    const btnDownload = document.getElementById('btn-download-html');
-
-    // Initialization
-    initCategories();
-    if (promptData.categories.length > 0) {
-        selectCategory(promptData.categories[0].id);
+    // --- Initialization ---
+    renderCategoryGrid();
+    
+    // --- Navigation Logic ---
+    function hideAllStates() {
+        state1.classList.add('hidden');
+        state2.classList.add('hidden');
+        state2.classList.remove('flex');
+        state3.classList.add('hidden');
+        state3.classList.remove('flex');
+        stateVisualizer.classList.add('hidden');
+        stateVisualizer.classList.remove('flex');
     }
 
-    // View Navigation Logic
-    function showGeneratorView() {
-        viewVisualizer.classList.add('hidden');
-        viewGenerator.classList.remove('hidden');
-        navVisualizer.classList.remove('active');
-        // Active class for category is handled in selectCategory
+    function goToState1() {
+        hideAllStates();
+        state1.classList.remove('hidden');
+        tickerInput.focus();
     }
 
-    function showVisualizerView() {
-        viewGenerator.classList.add('hidden');
-        viewVisualizer.classList.remove('hidden');
-        viewVisualizer.classList.add('flex'); // Because flex is applied inline when visible
+    function goToState2() {
+        const ticker = tickerInput.value.trim();
+        if (!ticker) {
+            tickerError.classList.remove('hidden');
+            return;
+        }
+        tickerError.classList.add('hidden');
+        appState.ticker = ticker;
+        displayTicker2.textContent = ticker;
         
-        // Remove active state from categories
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        navVisualizer.classList.add('active');
-        
-        categoryTitleEl.textContent = "Workspace Tools";
+        hideAllStates();
+        state2.classList.remove('hidden');
+        state2.classList.add('flex');
     }
 
-    navVisualizer.addEventListener('click', (e) => {
-        e.preventDefault();
-        showVisualizerView();
+    function goToState3() {
+        if (appState.selectedCategories.length === 0) return;
+        
+        displayTicker3.textContent = appState.ticker;
+        const catNames = appState.selectedCategories.map(id => {
+            return promptData.categories.find(c => c.id === id).title;
+        }).join(', ');
+        displayCategories.textContent = catNames;
+        
+        renderMiniTabs();
+        
+        hideAllStates();
+        state3.classList.remove('hidden');
+        state3.classList.add('flex');
+    }
+
+    function goToVisualizer() {
+        hideAllStates();
+        stateVisualizer.classList.remove('hidden');
+        stateVisualizer.classList.add('flex');
+    }
+
+    // --- Event Listeners: Navigation ---
+    btnContinue1.addEventListener('click', goToState2);
+    tickerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') goToState2(); });
+    
+    btnEditTicker.addEventListener('click', goToState1);
+    
+    btnContinue2.addEventListener('click', goToState3);
+    
+    btnEditCategories.addEventListener('click', goToState2);
+
+    navVisualizer.addEventListener('click', goToVisualizer);
+    btnCloseVisualizer.addEventListener('click', () => {
+        if (appState.selectedCategories.length > 0) goToState3();
+        else if (appState.ticker) goToState2();
+        else goToState1();
     });
 
-    // Logic: Free Plan Warning for Visual HTML
+    // --- Render Logic ---
+
+    function renderCategoryGrid() {
+        categoryGrid.innerHTML = '';
+        promptData.categories.forEach(cat => {
+            const card = document.createElement('div');
+            card.className = 'cat-card bg-darkSurface border border-darkBorder rounded-xl p-6 flex flex-col items-center text-center';
+            card.dataset.id = cat.id;
+            
+            card.innerHTML = `
+                <div class="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center border border-zinc-700 text-zinc-400 mb-4 transition-colors icon-wrapper">
+                    <i class="fas ${cat.icon} text-xl"></i>
+                </div>
+                <h3 class="text-white font-semibold text-lg mb-2">${cat.title}</h3>
+                <p class="text-zinc-400 text-sm leading-relaxed">${cat.desc}</p>
+            `;
+
+            card.addEventListener('click', () => toggleCategory(cat.id, card));
+            categoryGrid.appendChild(card);
+        });
+    }
+
+    function toggleCategory(catId, cardEl) {
+        const idx = appState.selectedCategories.indexOf(catId);
+        
+        if (idx > -1) {
+            // Deselect
+            appState.selectedCategories.splice(idx, 1);
+            cardEl.classList.remove('selected');
+            cardEl.querySelector('.icon-wrapper').classList.remove('text-accent', 'border-accent');
+        } else {
+            // Select (Max 2)
+            if (appState.selectedCategories.length >= 2) {
+                showToast(maxCatToast);
+                // Shake animation
+                cardEl.style.animation = 'shake 0.4s';
+                setTimeout(() => cardEl.style.animation = '', 400);
+                return;
+            }
+            appState.selectedCategories.push(catId);
+            cardEl.classList.add('selected');
+            cardEl.querySelector('.icon-wrapper').classList.add('text-accent', 'border-accent');
+        }
+
+        updateCategoryUI();
+    }
+
+    function updateCategoryUI() {
+        const count = appState.selectedCategories.length;
+        
+        // Update unselected cards state (dim them if max reached)
+        document.querySelectorAll('.cat-card').forEach(card => {
+            if (!appState.selectedCategories.includes(card.dataset.id)) {
+                if (count >= 2) card.classList.add('disabled');
+                else card.classList.remove('disabled');
+            }
+        });
+
+        if (count > 0) {
+            catCountSpan.textContent = count;
+            btnContinue2.classList.remove('hidden');
+        } else {
+            btnContinue2.classList.add('hidden');
+        }
+        
+        // Reset mini tabs if categories change
+        appState.selectedMiniTabs = [];
+    }
+
+    function showToast(el) {
+        el.classList.remove('opacity-0', 'pointer-events-none');
+        setTimeout(() => {
+            el.classList.add('opacity-0', 'pointer-events-none');
+        }, 3000);
+    }
+
+    function renderMiniTabs() {
+        miniTabsContainer.innerHTML = '';
+        
+        appState.selectedCategories.forEach(catId => {
+            const catMeta = promptData.categories.find(c => c.id === catId);
+            const modules = promptData.modules[catId] || [];
+            
+            if (modules.length === 0) return;
+
+            const section = document.createElement('div');
+            section.className = 'bg-darkSurface border border-darkBorder rounded-xl p-6 shadow-lg fade-in';
+            
+            section.innerHTML = `
+                <div class="flex items-center mb-6 pb-4 border-b border-darkBorder">
+                    <i class="fas ${catMeta.icon} text-accent text-xl mr-3"></i>
+                    <h2 class="text-xl font-bold text-white">${catMeta.title} Modules</h2>
+                </div>
+                <div class="flex flex-wrap gap-3" id="chip-container-${catId}"></div>
+            `;
+            
+            miniTabsContainer.appendChild(section);
+            
+            const chipContainer = section.querySelector(`#chip-container-${catId}`);
+            
+            modules.forEach(mod => {
+                const chip = document.createElement('button');
+                chip.className = 'mini-tab-chip px-4 py-2 rounded-lg text-sm font-medium text-zinc-300';
+                chip.textContent = mod.title;
+                
+                // Re-apply selected state if it exists
+                if (appState.selectedMiniTabs.some(m => m.id === mod.id)) {
+                    chip.classList.add('selected');
+                }
+                
+                chip.addEventListener('click', () => {
+                    const exists = appState.selectedMiniTabs.findIndex(m => m.id === mod.id);
+                    if (exists > -1) {
+                        appState.selectedMiniTabs.splice(exists, 1);
+                        chip.classList.remove('selected');
+                    } else {
+                        appState.selectedMiniTabs.push(mod);
+                        chip.classList.add('selected');
+                    }
+                    miniTabError.classList.add('hidden');
+                });
+                
+                chipContainer.appendChild(chip);
+            });
+        });
+    }
+
+    // --- Logic: Free Plan Warning ---
     function updatePlanWarnings() {
         const isFree = planSelect.value === 'free';
         const isVisual = document.querySelector('input[name="output_format"]:checked').value === 'visual';
         
-        if (isFree && isVisual) {
-            freePlanWarning.classList.remove('hidden');
-        } else {
-            freePlanWarning.classList.add('hidden');
-        }
+        if (isFree && isVisual) freePlanWarning.classList.remove('hidden');
+        else freePlanWarning.classList.add('hidden');
     }
-
     planSelect.addEventListener('change', updatePlanWarnings);
     formatRadios.forEach(radio => radio.addEventListener('change', updatePlanWarnings));
 
-    // Core Functions
-    function initCategories() {
-        promptData.categories.forEach(category => {
-            const a = document.createElement('a');
-            a.href = '#';
-            a.className = 'nav-item flex items-center px-4 py-3 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors';
-            a.dataset.id = category.id;
-            
-            a.innerHTML = `<i class="fas ${category.icon} w-6 text-center mr-2"></i> ${category.title}`;
-            
-            a.addEventListener('click', (e) => {
-                e.preventDefault();
-                showGeneratorView();
-                selectCategory(category.id);
-            });
-            
-            categoryListEl.appendChild(a);
-        });
-    }
-
-    function selectCategory(categoryId) {
-        currentCategory = categoryId;
-        
-        document.querySelectorAll('#category-list .nav-item').forEach(el => {
-            el.classList.toggle('active', el.dataset.id === categoryId);
-        });
-
-        const categoryMeta = promptData.categories.find(c => c.id === categoryId);
-        if (categoryMeta) {
-            categoryTitleEl.textContent = categoryMeta.title;
-        }
-
-        renderGenerators(categoryId);
-        clearWorkspace();
-    }
-
-    function renderGenerators(categoryId) {
-        generatorListEl.innerHTML = '';
-        const generators = promptData.generators[categoryId] || [];
-
-        if (generators.length === 0) {
-            generatorListEl.innerHTML = '<p class="text-zinc-500 text-sm">No tools available yet.</p>';
+    // --- Generate & Copy Action ---
+    btnGenerate.addEventListener('click', () => {
+        if (appState.selectedMiniTabs.length === 0) {
+            miniTabError.classList.remove('hidden');
             return;
         }
-
-        generators.forEach(gen => {
-            const card = document.createElement('div');
-            card.className = 'generator-card bg-darkSurface border border-darkBorder rounded-xl p-5 mb-4 cursor-pointer relative overflow-hidden group shrink-0';
-            card.dataset.id = gen.id;
-            card.innerHTML = `
-                <div class="flex items-start">
-                    <div class="mt-1 w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center border border-zinc-700 text-zinc-400 group-hover:text-finGreen transition-colors">
-                        <i class="fas ${gen.icon}"></i>
-                    </div>
-                    <div class="ml-4 flex-1">
-                        <h4 class="text-zinc-100 font-semibold text-sm mb-1">${gen.title}</h4>
-                        <p class="text-xs text-zinc-400 leading-relaxed">${gen.description}</p>
-                    </div>
-                </div>
-            `;
-            
-            card.addEventListener('click', () => {
-                selectGenerator(gen, card);
-            });
-
-            generatorListEl.appendChild(card);
-        });
-    }
-
-    function selectGenerator(generator, cardElement) {
-        currentGenerator = generator;
-        
-        document.querySelectorAll('.generator-card').forEach(el => el.classList.remove('active'));
-        if (cardElement) cardElement.classList.add('active');
-
-        generatorTitleEl.textContent = generator.title;
-        outputVersionBadge.textContent = generator.version;
-
-        renderConfigForm(generator);
-
-        emptyState.style.display = 'none';
-        configSection.style.display = 'flex';
-    }
-
-    function renderConfigForm(generator) {
-        configForm.innerHTML = '';
-        
-        generator.fields.forEach(field => {
-            const group = document.createElement('div');
-            
-            const label = document.createElement('label');
-            label.htmlFor = field.id;
-            label.className = 'block text-xs font-medium text-zinc-400 mb-1';
-            label.textContent = field.label;
-            group.appendChild(label);
-
-            if (field.type === 'text') {
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.id = field.id;
-                input.placeholder = field.placeholder || '';
-                input.className = 'w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-300 focus:outline-none focus:border-finGreen focus:ring-1 focus:ring-finGreen transition-colors';
-                group.appendChild(input);
-            } else if (field.type === 'select') {
-                const select = document.createElement('select');
-                select.id = field.id;
-                select.className = 'w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-300 focus:outline-none focus:border-finGreen transition-colors';
-                field.options.forEach(opt => {
-                    const option = document.createElement('option');
-                    option.value = opt;
-                    option.textContent = opt;
-                    select.appendChild(option);
-                });
-                group.appendChild(select);
-            }
-
-            configForm.appendChild(group);
-        });
-    }
-
-    function clearWorkspace() {
-        currentGenerator = null;
-        configSection.style.display = 'none';
-        emptyState.style.display = 'flex';
-    }
-
-    // Generate & Copy Action
-    generateCopyBtn.addEventListener('click', () => {
-        if (!currentGenerator) return;
-
-        // Gather Data
-        const formData = {};
-        currentGenerator.fields.forEach(field => {
-            const element = document.getElementById(field.id);
-            if (element) {
-                formData[field.id] = element.value;
-            }
-        });
 
         const aiModel = modelSelect.value;
         const aiPlan = planSelect.value;
         const outputFormat = document.querySelector('input[name="output_format"]:checked').value;
 
-        // Generate
-        const finalPrompt = PromptEngine.generate(currentGenerator, formData, aiModel, aiPlan, outputFormat);
+        // Generate the complex prompt
+        const finalPrompt = PromptEngine.generate(appState.ticker, appState.selectedMiniTabs, aiModel, aiPlan, outputFormat);
 
-        // Copy to Clipboard (Hidden)
+        // Copy to Clipboard
         navigator.clipboard.writeText(finalPrompt).then(() => {
-            // Visual feedback
-            const originalContent = generateCopyBtn.innerHTML;
-            generateCopyBtn.innerHTML = '<i class="fas fa-check-circle"></i><span>Copied to Clipboard!</span>';
-            generateCopyBtn.classList.remove('from-finGreen', 'to-emerald-600');
-            generateCopyBtn.classList.add('bg-zinc-800', 'border', 'border-finGreen', 'text-finGreen');
+            const originalContent = btnGenerate.innerHTML;
+            btnGenerate.innerHTML = '<i class="fas fa-check-circle"></i><span>Copied to Clipboard!</span>';
+            btnGenerate.classList.remove('from-accent', 'to-blue-600');
+            btnGenerate.classList.add('bg-finGreen');
             
             setTimeout(() => {
-                generateCopyBtn.innerHTML = originalContent;
-                generateCopyBtn.classList.add('from-finGreen', 'to-emerald-600');
-                generateCopyBtn.classList.remove('bg-zinc-800', 'border', 'border-finGreen', 'text-finGreen');
+                btnGenerate.innerHTML = originalContent;
+                btnGenerate.classList.add('from-accent', 'to-blue-600');
+                btnGenerate.classList.remove('bg-finGreen');
             }, 3000);
         });
     });
 
-    // --- HTML Visualizer Actions ---
-    
+    // --- Visualizer Logic ---
     btnRender.addEventListener('click', () => {
         const rawHtml = visualizerInput.value;
         if (!rawHtml.trim()) return;
-
-        // Hide placeholder
         visualizerPlaceholder.style.display = 'none';
-        
-        // Inject HTML into iframe via srcdoc
         visualizerFrame.srcdoc = rawHtml;
     });
 
@@ -263,8 +307,6 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Please paste some HTML code first.');
             return;
         }
-
-        // Create Blob and trigger download
         const blob = new Blob([rawHtml], { type: 'text/html' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -272,8 +314,6 @@ document.addEventListener('DOMContentLoaded', () => {
         a.download = 'financial_dashboard.html';
         document.body.appendChild(a);
         a.click();
-        
-        // Cleanup
         setTimeout(() => {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
@@ -281,3 +321,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 });
+
+// Global shake animation style
+const style = document.createElement('style');
+style.innerHTML = `
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}`;
+document.head.appendChild(style);

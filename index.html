@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prompt Architect | Premium Financial Intelligence</title>
+    <title>Prompt Architect | Premium AI Financial Research</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -27,198 +27,228 @@
         }
     </script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #09090b; color: #e4e4e7; }
-        .gradient-text { background: linear-gradient(90deg, #16a34a, #2563eb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .bg-pattern { background-image: radial-gradient(#27272a 1px, transparent 1px); background-size: 20px 20px; }
+        body { font-family: 'Inter', sans-serif; background-color: #09090b; color: #e4e4e7; overflow-x: hidden; }
+        .bg-pattern { background-image: radial-gradient(#27272a 1px, transparent 1px); background-size: 30px 30px; }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #18181b; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
         
-        .nav-item.active { border-left: 3px solid #16a34a; background-color: rgba(22, 163, 74, 0.1); color: #fff; }
-        .generator-card { transition: all 0.2s ease; }
-        .generator-card:hover { transform: translateY(-3px); border-color: #3f3f46; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); }
-        .generator-card.active { border-color: #16a34a; background-color: rgba(22, 163, 74, 0.05); }
+        /* Progressive Disclosure Animations */
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* The prompt textarea is strictly hidden per requirements */
+        /* Premium Components */
+        .hero-input:focus { box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3); }
+        
+        .cat-card { transition: all 0.2s ease; cursor: pointer; }
+        .cat-card:hover:not(.disabled) { transform: translateY(-3px); border-color: #3f3f46; box-shadow: 0 10px 20px -5px rgba(0,0,0,0.5); }
+        .cat-card.selected { border-color: #2563eb; background-color: rgba(37, 99, 235, 0.05); }
+        .cat-card.disabled { opacity: 0.4; cursor: not-allowed; }
+        
+        .mini-tab-chip { transition: all 0.2s; cursor: pointer; border: 1px solid #27272a; }
+        .mini-tab-chip:hover { border-color: #3f3f46; background: #27272a; }
+        .mini-tab-chip.selected { background: #16a34a; border-color: #16a34a; color: white; }
+
+        /* Hidden prompt area */
         #hidden-prompt-storage { display: none; }
     </style>
 </head>
-<body class="h-screen overflow-hidden flex bg-darkBase text-zinc-300">
+<body class="h-screen w-screen flex flex-col bg-darkBase text-zinc-300 bg-pattern">
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-darkSurface border-r border-darkBorder flex flex-col z-20 shadow-2xl">
-        <div class="h-16 flex items-center px-6 border-b border-darkBorder">
-            <i class="fas fa-chart-pie text-finGreen text-xl mr-3"></i>
-            <span class="font-bold text-lg tracking-tight text-white">Prompt <span class="text-finGreen">Architect</span></span>
+    <!-- Topbar (Always Visible) -->
+    <header class="h-16 bg-darkSurface/80 backdrop-blur-md border-b border-darkBorder flex items-center justify-between px-8 z-50 shrink-0 sticky top-0">
+        <div class="flex items-center cursor-pointer" id="nav-logo">
+            <i class="fas fa-chart-pie text-accent text-xl mr-3"></i>
+            <span class="font-bold text-lg tracking-tight text-white">Prompt <span class="text-accent">Architect</span></span>
         </div>
-        
-        <div class="flex-1 overflow-y-auto custom-scrollbar">
-            <!-- Financial Domains -->
-            <div class="p-4 pb-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider">Financial Domains</div>
-            <nav class="px-3 space-y-1 mb-6" id="category-list">
-                <!-- Categories injected here -->
-            </nav>
-
-            <!-- Workspace Tools -->
-            <div class="p-4 pb-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider border-t border-darkBorder">Workspace Tools</div>
-            <nav class="px-3 space-y-1 mb-4">
-                <a href="#" id="nav-visualizer" class="nav-item flex items-center px-4 py-3 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
-                    <i class="fas fa-laptop-code w-6 text-center mr-2"></i> HTML Visualizer
-                </a>
-            </nav>
+        <div class="flex items-center space-x-4">
+            <button id="nav-visualizer" class="text-xs font-medium px-4 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-zinc-300 transition-colors">
+                <i class="fas fa-laptop-code mr-2"></i> HTML Visualizer
+            </button>
+            <span class="text-xs font-medium px-3 py-1 bg-finGreen/10 border border-finGreen/20 rounded-full text-finGreen">
+                <i class="fas fa-check-circle mr-1"></i> Pro Edition v3.0
+            </span>
         </div>
+    </header>
+
+    <!-- MAIN SCROLLABLE CONTAINER -->
+    <main class="flex-1 overflow-y-auto custom-scrollbar relative flex flex-col items-center py-12 px-4" id="main-container">
         
-        <div class="p-4 border-t border-darkBorder">
-            <div class="flex items-center">
-                <div class="w-8 h-8 rounded bg-zinc-800 flex items-center justify-center border border-zinc-700">
-                    <i class="fas fa-user-tie text-zinc-400"></i>
-                </div>
-                <div class="ml-3">
-                    <p class="text-sm font-medium text-zinc-200">Pro Architect</p>
-                    <p class="text-xs text-zinc-500">v2.1 Finance Edition</p>
-                </div>
-            </div>
-        </div>
-    </aside>
+        <!-- ========================================== -->
+        <!-- STATE 1: LANDING PAGE (HERO & TICKER INPUT) -->
+        <!-- ========================================== -->
+        <section id="state-1" class="w-full max-w-4xl flex flex-col items-center text-center mt-12 fade-in">
+            <h1 class="text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
+                Institutional-Grade <br/> <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-blue-400">AI Financial Research</span>
+            </h1>
+            <p class="text-zinc-400 text-lg mb-12 max-w-2xl">
+                A premium prompt engineering platform designed to extract deep, expert-level financial analysis from modern AI models.
+            </p>
 
-    <!-- Main Content -->
-    <main class="flex-1 flex flex-col relative overflow-hidden bg-pattern">
-        
-        <!-- Topbar -->
-        <header class="h-16 bg-darkSurface/90 backdrop-blur-sm border-b border-darkBorder flex items-center justify-between px-8 z-10 shrink-0">
-            <div>
-                <h1 class="text-xl font-semibold text-white" id="current-category-title">Select a Domain</h1>
-            </div>
-            <div class="flex items-center space-x-4">
-                <span class="text-xs font-medium px-3 py-1 bg-zinc-800 border border-zinc-700 rounded-full text-zinc-400">
-                    <i class="fas fa-lock mr-1 text-finGold"></i> Prompts Secured
-                </span>
-            </div>
-        </header>
-
-        <!-- VIEW 1: PROMPT GENERATOR -->
-        <div id="view-generator" class="flex-1 flex overflow-hidden">
-            
-            <!-- Generators Grid -->
-            <div class="w-1/2 p-8 overflow-y-auto custom-scrollbar border-r border-darkBorder" id="generator-list">
-                <!-- Generators injected here -->
-            </div>
-
-            <!-- Configuration Workspace -->
-            <div class="w-1/2 p-8 overflow-y-auto custom-scrollbar flex flex-col relative">
+            <div class="w-full max-w-xl relative group">
+                <input type="text" id="ticker-input" 
+                    class="hero-input w-full bg-darkSurface border border-darkBorder rounded-full py-5 pl-8 pr-20 text-lg text-white placeholder-zinc-500 outline-none transition-all"
+                    placeholder="Enter Company Ticker or Name (e.g., AAPL)">
                 
-                <!-- Empty State -->
-                <div id="empty-state" class="absolute inset-0 flex flex-col items-center justify-center text-zinc-500">
-                    <i class="fas fa-project-diagram text-5xl mb-4 opacity-50"></i>
-                    <p class="text-lg">Select a financial tool to configure.</p>
+                <button id="btn-continue-1" 
+                    class="absolute right-2 top-2 bottom-2 aspect-square bg-accent hover:bg-blue-600 rounded-full flex items-center justify-center text-white transition-all transform hover:scale-105">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+            <p id="ticker-error" class="text-finRed text-sm mt-3 hidden">Please enter a valid company name or ticker.</p>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- STATE 2: MAJOR CATEGORY SELECTION -->
+        <!-- ========================================== -->
+        <section id="state-2" class="w-full max-w-6xl hidden flex-col fade-in">
+            <!-- Completed Step Summary -->
+            <div class="mb-8 p-4 bg-darkSurface/50 border border-darkBorder rounded-xl flex items-center justify-between">
+                <div class="flex items-center">
+                    <i class="fas fa-building text-zinc-500 mr-3"></i>
+                    <span class="text-zinc-400 text-sm">Target Company:</span>
+                    <span class="text-white font-bold ml-2 text-lg" id="display-ticker">AAPL</span>
+                </div>
+                <button id="btn-edit-ticker" class="text-accent text-sm hover:underline">Edit</button>
+            </div>
+
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold text-white mb-2">Select Research Focus</h2>
+                <p class="text-zinc-400">Choose up to <strong class="text-white">2</strong> major analysis categories to construct your prompt.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="category-grid">
+                <!-- Categories injected here by app.js -->
+            </div>
+
+            <div class="mt-12 flex justify-center">
+                <button id="btn-continue-2" class="hidden bg-accent hover:bg-blue-600 text-white px-8 py-3 rounded-full font-bold text-lg transition-all shadow-[0_0_15px_rgba(37,99,235,0.4)]">
+                    Continue with <span id="cat-count">1</span> Selection <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+            <!-- Toast notification for max limit -->
+            <div id="max-cat-toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-finRed text-white px-6 py-3 rounded-full shadow-2xl transition-opacity duration-300 opacity-0 pointer-events-none z-50">
+                <i class="fas fa-exclamation-triangle mr-2"></i> You can select up to 2 major categories.
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- STATE 3: MINI TAB SELECTION & AI CONFIG -->
+        <!-- ========================================== -->
+        <section id="state-3" class="w-full max-w-6xl hidden flex-col fade-in">
+            <!-- Completed Step Summary -->
+            <div class="mb-8 p-4 bg-darkSurface/50 border border-darkBorder rounded-xl flex items-center justify-between">
+                <div class="flex items-center">
+                    <i class="fas fa-building text-zinc-500 mr-3"></i>
+                    <span class="text-white font-bold text-lg mr-4" id="display-ticker-3">AAPL</span>
+                    <i class="fas fa-chevron-right text-zinc-600 mr-4 text-xs"></i>
+                    <span class="text-zinc-400 text-sm">Categories:</span>
+                    <span class="text-accent font-medium ml-2" id="display-categories">Valuation, Risk</span>
+                </div>
+                <button id="btn-edit-categories" class="text-accent text-sm hover:underline">Edit</button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left Column: Mini Tabs -->
+                <div class="lg:col-span-2 space-y-8" id="mini-tabs-container">
+                    <!-- Dynamic sections for each selected major category injected here -->
                 </div>
 
-                <!-- Config Form -->
-                <div id="config-section" class="hidden flex-col h-full">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold text-white" id="current-generator-title">Tool Name</h2>
-                        <span class="px-2 py-1 text-xs bg-accent/20 text-accent border border-accent/30 rounded" id="output-version-badge">v2.0</span>
-                    </div>
-
-                    <div class="bg-darkSurface border border-darkBorder rounded-xl p-6 mb-6 shadow-lg shrink-0">
+                <!-- Right Column: AI Configuration -->
+                <div class="lg:col-span-1">
+                    <div class="bg-darkSurface border border-darkBorder rounded-xl p-6 sticky top-24 shadow-xl">
                         <h3 class="text-sm font-semibold text-zinc-400 uppercase tracking-wide mb-4 border-b border-darkBorder pb-2">AI Settings</h3>
-                        <div class="grid grid-cols-2 gap-4 mb-2">
+                        
+                        <div class="space-y-4 mb-6">
                             <div>
                                 <label class="block text-xs font-medium text-zinc-400 mb-1">AI Model</label>
-                                <select id="ai-model-select" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-300 focus:outline-none focus:border-finGreen">
-                                    <option value="chatgpt">ChatGPT</option>
-                                    <option value="claude">Claude</option>
-                                    <option value="gemini">Gemini</option>
+                                <select id="ai-model-select" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-300 focus:outline-none focus:border-accent">
+                                    <option value="chatgpt">ChatGPT (GPT-4)</option>
+                                    <option value="claude">Claude (Opus/Sonnet)</option>
+                                    <option value="gemini">Gemini (Advanced)</option>
                                     <option value="perplexity">Perplexity</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-zinc-400 mb-1">AI Plan / Tier</label>
-                                <select id="ai-plan-select" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-300 focus:outline-none focus:border-finGreen">
-                                    <option value="free">Free Tier</option>
+                                <label class="block text-xs font-medium text-zinc-400 mb-1">AI Plan</label>
+                                <select id="ai-plan-select" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-300 focus:outline-none focus:border-accent">
                                     <option value="pro">Pro / Advanced Tier</option>
+                                    <option value="free">Free Tier</option>
                                 </select>
                             </div>
-                        </div>
-                        
-                        <div class="mt-4 pt-4 border-t border-darkBorder">
-                            <label class="block text-xs font-medium text-zinc-400 mb-1">Output Format</label>
-                            <div class="flex space-x-4">
-                                <label class="flex items-center space-x-2 cursor-pointer">
-                                    <input type="radio" name="output_format" value="text" checked class="text-finGreen focus:ring-finGreen bg-zinc-900 border-zinc-700">
-                                    <span class="text-sm">Normal Text</span>
-                                </label>
-                                <label class="flex items-center space-x-2 cursor-pointer relative group">
-                                    <input type="radio" name="output_format" value="visual" class="text-finGreen focus:ring-finGreen bg-zinc-900 border-zinc-700">
-                                    <span class="text-sm text-white font-medium">Visual (HTML) <i class="fas fa-bolt text-finGold ml-1"></i></span>
-                                    
-                                    <!-- Warning for Free Plan users trying to use Visual HTML -->
-                                    <div id="free-plan-warning" class="hidden absolute top-full left-0 mt-2 w-64 bg-zinc-800 border border-finRed/50 p-2 rounded shadow-xl text-xs text-zinc-300 z-10">
-                                        <i class="fas fa-exclamation-triangle text-finRed mr-1"></i>
-                                        <strong>Recommended to use Normal Text.</strong> Free AI models often fail at complex HTML generation.
-                                    </div>
-                                </label>
+                            <div>
+                                <label class="block text-xs font-medium text-zinc-400 mb-1">Output Format</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="radio" name="output_format" value="text" checked class="text-accent focus:ring-accent bg-zinc-900 border-zinc-700">
+                                        <span class="text-sm">Structured Text</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer relative group">
+                                        <input type="radio" name="output_format" value="visual" class="text-accent focus:ring-accent bg-zinc-900 border-zinc-700">
+                                        <span class="text-sm text-white font-medium">Visual (HTML) <i class="fas fa-bolt text-finGold ml-1"></i></span>
+                                        <!-- Warning for Free Plan -->
+                                        <div id="free-plan-warning" class="hidden absolute top-full left-0 mt-2 w-full bg-zinc-800 border border-finRed/50 p-2 rounded shadow-xl text-xs text-zinc-300 z-10">
+                                            <i class="fas fa-exclamation-triangle text-finRed mr-1"></i>
+                                            <strong>Warning:</strong> Free AI models often fail at complex HTML generation. Text format is recommended.
+                                        </div>
+                                    </label>
+                                </div>
                             </div>
                         </div>
+
+                        <button id="generate-copy-btn" class="w-full bg-gradient-to-r from-accent to-blue-600 hover:from-blue-600 hover:to-accent text-white font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all transform hover:scale-[1.01] flex items-center justify-center space-x-3 text-base">
+                            <i class="fas fa-microchip"></i>
+                            <span>Assemble & Copy Prompt</span>
+                        </button>
+                        <p class="text-center text-xs text-zinc-500 mt-3">
+                            <i class="fas fa-lock mr-1"></i> Proprietary prompt copied directly to clipboard.
+                        </p>
+                        <p id="mini-tab-error" class="text-finRed text-xs text-center mt-2 hidden">Select at least one mini-tab to generate.</p>
                     </div>
-
-                    <div class="bg-darkSurface border border-darkBorder rounded-xl p-6 mb-8 flex-1 shadow-lg overflow-y-auto custom-scrollbar">
-                        <h3 class="text-sm font-semibold text-zinc-400 uppercase tracking-wide mb-4 border-b border-darkBorder pb-2">Analysis Parameters</h3>
-                        <form id="prompt-config-form" class="space-y-4">
-                            <!-- Dynamic fields injected here -->
-                        </form>
-                    </div>
-
-                    <!-- Hidden output for clipboard operations -->
-                    <textarea id="hidden-prompt-storage" readonly></textarea>
-
-                    <button id="generate-copy-btn" class="shrink-0 w-full bg-gradient-to-r from-finGreen to-emerald-600 hover:from-emerald-500 hover:to-finGreen text-white font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(22,163,74,0.3)] transition-all transform hover:scale-[1.01] flex items-center justify-center space-x-3 text-lg">
-                        <i class="fas fa-microchip"></i>
-                        <span>Generate & Copy Prompt</span>
-                    </button>
-                    
-                    <p class="shrink-0 text-center text-xs text-zinc-500 mt-4">
-                        <i class="fas fa-shield-alt mr-1"></i> The engineered prompt is proprietary and will be copied directly to your clipboard.
-                    </p>
                 </div>
-
             </div>
-        </div>
+        </section>
 
-        <!-- VIEW 2: HTML VISUALIZER -->
-        <div id="view-visualizer" class="hidden flex-1 flex flex-col p-8 overflow-hidden">
+        <!-- ========================================== -->
+        <!-- STATE 4: HTML VISUALIZER                   -->
+        <!-- ========================================== -->
+        <section id="state-visualizer" class="w-full max-w-6xl hidden flex-col h-full fade-in">
             <div class="bg-darkSurface border border-darkBorder rounded-xl p-6 shadow-lg flex-1 flex flex-col">
                 <div class="flex items-center justify-between mb-4 shrink-0">
                     <div>
                         <h2 class="text-xl font-bold text-white">AI Output Visualizer</h2>
-                        <p class="text-sm text-zinc-400">Paste the raw HTML code provided by the AI below to render the dashboard.</p>
+                        <p class="text-sm text-zinc-400">Paste the raw HTML code generated by the AI below to render the dashboard.</p>
                     </div>
                     <div class="flex space-x-3">
                         <button id="btn-render-html" class="bg-accent hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                            <i class="fas fa-play mr-2"></i>Render Dashboard
+                            <i class="fas fa-play mr-2"></i>Render
                         </button>
                         <button id="btn-download-html" class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                             <i class="fas fa-download mr-2"></i>Download .html
                         </button>
+                        <button id="btn-close-visualizer" class="text-zinc-400 hover:text-white px-2 py-2">
+                            <i class="fas fa-times text-lg"></i>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Input area for raw HTML -->
-                <textarea id="visualizer-input" class="w-full h-48 bg-zinc-900 border border-zinc-700 rounded-lg p-4 text-sm text-zinc-300 font-mono focus:outline-none focus:border-accent custom-scrollbar shrink-0 mb-4" placeholder="<!-- Paste the AI generated HTML code here... -->"></textarea>
+                <textarea id="visualizer-input" class="w-full h-32 bg-zinc-900 border border-zinc-700 rounded-lg p-4 text-sm text-zinc-300 font-mono focus:outline-none focus:border-accent custom-scrollbar shrink-0 mb-4" placeholder="<!-- Paste the AI generated HTML code here... -->"></textarea>
                 
-                <!-- Output iframe for rendering -->
-                <div class="flex-1 border border-zinc-700 rounded-lg overflow-hidden bg-white relative">
+                <div class="flex-1 border border-zinc-700 rounded-lg overflow-hidden bg-white relative min-h-[400px]">
                     <iframe id="visualizer-frame" class="w-full h-full border-0 bg-white"></iframe>
                     <div id="visualizer-placeholder" class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-100 text-zinc-400">
-                        <i class="fas fa-image text-4xl mb-2"></i>
+                        <i class="fas fa-chart-bar text-4xl mb-2"></i>
                         <p>Dashboard Preview will appear here</p>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
     </main>
 
+    <!-- Load Data & Logic -->
+    <script src="js/data_1.js"></script>
+    <script src="js/data_2.js"></script>
     <script src="js/data.js"></script>
     <script src="js/engine.js"></script>
     <script src="js/app.js"></script>
