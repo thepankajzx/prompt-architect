@@ -143,6 +143,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Event Listeners: Navigation ---
+    const navLogo = document.getElementById('nav-logo');
+    navLogo.addEventListener('click', goToState1);
+
     btnContinue1.addEventListener('click', goToState2);
     tickerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') goToState2(); });
     

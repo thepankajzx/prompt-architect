@@ -80,11 +80,10 @@
         </div>
         <div class="flex items-center space-x-3 md:space-x-4">
             <!-- Premium CTA -->
-            <a href="https://wa.me/7018168156?text=Hi!%20I%20want%20to%20subscribe%20to%20the%20Premium%20version%20of%20the%20AI%20Financial%20Research%20Architect.%20Please%20share%20the%20details." target="_blank" class="hidden sm:flex items-center bg-gradient-to-r from-[#FCEEAC] via-[#D4AF37] to-[#B8860B] text-zinc-900 font-semibold px-5 py-2 rounded-full text-xs md:text-sm border border-[#FCEEAC]/40 hover:scale-[1.03] hover:-translate-y-0.5 transition-all duration-300 shadow-[0_4px_15px_rgba(212,175,55,0.4)] hover:shadow-[0_8px_25px_rgba(212,175,55,0.6)] relative overflow-hidden group">
+            <a href="https://wa.me/7018168156?text=Hi!%20I%20want%20to%20subscribe%20to%20the%20Premium%20version%20of%20the%20AI%20Financial%20Research%20Architect.%20Please%20share%20the%20details." target="_blank" class="w-9 h-9 rounded-full flex items-center justify-center bg-gradient-to-r from-[#FCEEAC] via-[#D4AF37] to-[#B8860B] border border-[#FCEEAC]/40 hover:scale-[1.05] hover:-translate-y-0.5 transition-all duration-300 shadow-[0_4px_15px_rgba(212,175,55,0.4)] hover:shadow-[0_8px_25px_rgba(212,175,55,0.6)] relative overflow-hidden group">
                 <!-- Metallic Highlight -->
                 <div class="absolute inset-0 bg-gradient-to-b from-white/50 to-transparent rounded-full pointer-events-none"></div>
-                <i class="fas fa-crown mr-2 relative z-10 text-black"></i> 
-                <span class="relative z-10 text-black tracking-wide">Premium</span>
+                <i class="fas fa-crown relative z-10 text-black text-sm"></i>
             </a>
             <!-- Theme Toggle -->
             <button id="theme-toggle" class="w-9 h-9 rounded-full flex items-center justify-center bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 transition-colors">
@@ -135,7 +134,12 @@
                     <span class="text-zinc-500 dark:text-zinc-400 text-xs md:text-sm hidden sm:inline">Target Company:</span>
                     <span class="text-zinc-900 dark:text-white font-bold ml-1 md:ml-2 text-base md:text-lg" id="display-ticker">AAPL</span>
                 </div>
-                <button id="btn-edit-ticker" class="text-accent text-sm hover:underline font-medium">Edit</button>
+                <button id="btn-edit-ticker" class="group bg-slate-900/80 dark:bg-slate-800/80 backdrop-blur-md border border-white/10 text-white pl-4 pr-1.5 py-1.5 rounded-full font-medium text-xs md:text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 hover:bg-slate-900/90 dark:hover:bg-slate-800/95 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3">
+                    <span>Edit</span>
+                    <span class="bg-white w-6 h-6 rounded-full flex items-center justify-center text-zinc-900 shadow-sm group-hover:translate-x-0.5 transition-transform duration-200">
+                        <i class="fas fa-pen text-[10px]"></i>
+                    </span>
+                </button>
             </div>
 
             <div class="text-center mb-8 md:mb-10 px-4">
@@ -190,7 +194,12 @@
                     <span class="text-zinc-500 dark:text-zinc-400 text-xs md:text-sm hidden sm:inline">Categories:</span>
                     <span class="text-accent font-medium ml-1 md:ml-2 text-sm md:text-base" id="display-categories">Valuation, Risk</span>
                 </div>
-                <button id="btn-edit-categories" class="text-accent text-sm hover:underline font-medium">Edit</button>
+                <button id="btn-edit-categories" class="group bg-slate-900/80 dark:bg-slate-800/80 backdrop-blur-md border border-white/10 text-white pl-4 pr-1.5 py-1.5 rounded-full font-medium text-xs md:text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 hover:bg-slate-900/90 dark:hover:bg-slate-800/95 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3">
+                    <span>Edit</span>
+                    <span class="bg-white w-6 h-6 rounded-full flex items-center justify-center text-zinc-900 shadow-sm group-hover:translate-x-0.5 transition-transform duration-200">
+                        <i class="fas fa-pen text-[10px]"></i>
+                    </span>
+                </button>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
