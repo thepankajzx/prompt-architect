@@ -79,10 +79,15 @@
             <span class="font-bold text-lg tracking-tight text-zinc-900 dark:text-white">Prompt <span class="text-accent">Architect</span></span>
         </div>
         <div class="flex items-center space-x-3 md:space-x-4">
-            <!-- Premium CTA -->
-            <a href="https://wa.me/7018168156?text=Hi!%20I%20want%20to%20subscribe%20to%20the%20Premium%20version%20of%20the%20AI%20Financial%20Research%20Architect.%20Please%20share%20the%20details." target="_blank" class="w-9 h-9 rounded-full flex items-center justify-center bg-gradient-to-br from-[#FCEEAC] to-[#D4AF37] hover:brightness-105 transition-all">
-                <i class="fas fa-crown text-black text-[13px]"></i>
-            </a>
+            <!-- Tier Toggle (Standard / Premium) -->
+            <div class="flex items-center bg-zinc-100 dark:bg-zinc-900 p-1 rounded-full border border-zinc-200 dark:border-zinc-800 shadow-inner">
+                <div class="px-3 md:px-4 py-1 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white text-[11px] md:text-xs font-bold rounded-full shadow-sm cursor-default">
+                    Standard
+                </div>
+                <a href="https://wa.me/7018168156?text=Hi!%20I%20want%20to%20subscribe%20to%20the%20Premium%20version%20of%20the%20AI%20Financial%20Research%20Architect.%20Please%20share%20the%20details." target="_blank" class="px-3 md:px-4 py-1 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white text-[11px] md:text-xs font-semibold rounded-full transition-colors flex items-center group">
+                    <i class="fas fa-crown text-finGold mr-1.5 group-hover:scale-110 transition-transform"></i> Premium
+                </a>
+            </div>
             <!-- Theme Toggle -->
             <button id="theme-toggle" class="w-9 h-9 rounded-full flex items-center justify-center bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 transition-colors">
                 <i class="fas fa-moon dark:hidden"></i>
