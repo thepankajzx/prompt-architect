@@ -136,6 +136,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     appState.market = globalMarkets[0];
     selectedFlag.className = `fi fi-${appState.market.flag} fis rounded-full text-2xl group-hover:scale-110 transition-transform shadow-sm border border-zinc-200 dark:border-zinc-700`;
+    selectedFlag.style.backgroundSize = "cover";
+    selectedFlag.style.backgroundPosition = "center";
 
     function renderMarkets(markets) {
         countryList.innerHTML = '';
@@ -144,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
             div.className = 'flex items-center justify-between p-3 hover:bg-zinc-100 dark:hover:bg-zinc-700/50 rounded-xl cursor-pointer transition-colors';
             div.innerHTML = `
                 <div class="flex items-center gap-3">
-                    <span class="fi fi-${market.flag} fis rounded-full w-6 h-6 border border-zinc-200 dark:border-zinc-700 shadow-sm" style="background-size: cover; background-position: center;"></span>
+                    <span class="fi fi-${market.flag} fis rounded-full w-6 h-6 border border-zinc-200 dark:border-zinc-700 shadow-sm" style="background-size: cover !important; background-position: center !important;"></span>
                     <div class="flex flex-col">
                         <span class="text-sm font-bold text-zinc-900 dark:text-white leading-tight">${market.name}</span>
                         <span class="text-[10px] text-zinc-500 font-medium">${market.exchange}</span>
@@ -155,6 +157,8 @@ document.addEventListener('DOMContentLoaded', () => {
             div.addEventListener('click', () => {
                 appState.market = market;
                 selectedFlag.className = `fi fi-${market.flag} fis rounded-full text-2xl group-hover:scale-110 transition-transform shadow-sm border border-zinc-200 dark:border-zinc-700`;
+                selectedFlag.style.backgroundSize = "cover";
+                selectedFlag.style.backgroundPosition = "center";
                 countryDropdown.classList.remove('opacity-100', 'scale-100');
                 countryDropdown.classList.add('opacity-0', 'scale-95');
                 setTimeout(() => countryDropdown.classList.add('hidden'), 200);
@@ -200,46 +204,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Validation Logic ---
-    const validationLoading = document.getElementById('validation-loading');
-    const validationErrorCard = document.getElementById('validation-error-card');
-    const btnSearchAgain = document.getElementById('btn-search-again');
-    const btnEditInput = document.getElementById('btn-edit-input');
-    const inputContainer = tickerInput.parentElement.parentElement; // The flex container wrapping selector and input
+    // --- Validation Logic (Removed per user request) ---
+    // The UI level validation has been removed. 
+    // Validation is strictly handled by the AI Prompt Directive.
 
-    async function validateCompany(ticker) {
-        try {
-            // Use public Yahoo Finance search API
-            const res = await fetch(`https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(ticker)}&quotesCount=5`);
-            if (!res.ok) return true; // CORS/Network block -> fallback to AI validation
-            
-            const data = await res.json();
-            if (data && data.quotes) {
-                // If API succeeds but returns absolutely no results, the company is invalid
-                if (data.quotes.length === 0) return false;
-                // Otherwise we pass it to AI for strict country/exchange matching
-                return true;
-            }
-            return true;
-        } catch (e) {
-            // CORS or AdBlock blocks the request -> fallback to AI validation
-            return true;
-        }
-    }
-
-    if (btnSearchAgain) btnSearchAgain.addEventListener('click', resetValidationUI);
-    if (btnEditInput) btnEditInput.addEventListener('click', () => {
-        resetValidationUI();
-        tickerInput.focus();
-    });
-
-    function resetValidationUI() {
-        validationErrorCard.classList.add('hidden');
-        inputContainer.classList.remove('hidden');
-        tickerInput.value = '';
-    }
-
-    async function goToState2() {
+    function goToState2() {
         const ticker = tickerInput.value.trim();
         if (!ticker) {
             tickerError.classList.remove('hidden');
@@ -247,23 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         tickerError.classList.add('hidden');
         
-        // Hide Input and show Loading
-        inputContainer.classList.add('hidden');
-        validationLoading.classList.remove('hidden');
-
-        // Execute Validation
-        const isValid = await validateCompany(ticker);
-
-        // Hide Loading
-        validationLoading.classList.add('hidden');
-
-        if (!isValid) {
-            validationErrorCard.classList.remove('hidden');
-            return;
-        }
-
-        // Proceed to State 2
-        inputContainer.classList.remove('hidden');
+        // Proceed to State 2 directly
         appState.ticker = ticker;
         displayTicker2.textContent = ticker;
         
