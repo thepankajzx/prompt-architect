@@ -135,30 +135,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectedFlag = document.getElementById('selected-flag');
 
     appState.market = globalMarkets[0];
-    selectedFlag.className = `fi fi-${appState.market.flag} fis rounded-full w-8 h-8 md:w-[38px] md:h-[38px] block group-hover:scale-110 transition-transform shadow-sm border border-zinc-200 dark:border-zinc-700`;
-    selectedFlag.style.backgroundSize = "cover";
-    selectedFlag.style.backgroundPosition = "center";
+    selectedFlag.style.backgroundImage = `url('https://flagcdn.com/1x1/${appState.market.flag}.svg')`;
 
     function renderMarkets(markets) {
         countryList.innerHTML = '';
         markets.forEach(market => {
             const div = document.createElement('div');
-            div.className = 'flex items-center justify-between p-3 hover:bg-zinc-100 dark:hover:bg-zinc-700/50 rounded-xl cursor-pointer transition-colors';
+            div.className = 'flex items-center p-3 hover:bg-zinc-100 dark:hover:bg-zinc-700/50 rounded-xl cursor-pointer transition-colors';
             div.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <span class="fi fi-${market.flag} fis rounded-full w-6 h-6 block shrink-0 border border-zinc-200 dark:border-zinc-700 shadow-sm" style="background-size: cover !important; background-position: center !important;"></span>
-                    <div class="flex flex-col">
-                        <span class="text-sm font-bold text-zinc-900 dark:text-white leading-tight">${market.name}</span>
-                        <span class="text-[10px] text-zinc-500 font-medium">${market.exchange}</span>
-                    </div>
+                <div class="w-8 h-8 rounded-full bg-cover bg-center border border-zinc-200 dark:border-zinc-700 shadow-sm shrink-0 mr-3.5" style="background-image: url('https://flagcdn.com/1x1/${market.flag}.svg');"></div>
+                <div class="flex flex-col items-start justify-center flex-1 overflow-hidden">
+                    <span class="text-sm font-semibold text-zinc-900 dark:text-white leading-tight truncate w-full text-left">${market.name}</span>
+                    <span class="text-[11px] text-zinc-500 font-medium mt-0.5 truncate w-full text-left">${market.exchange}</span>
                 </div>
-                ${appState.market.id === market.id ? '<i class="fas fa-check text-accent text-sm"></i>' : ''}
+                ${appState.market.id === market.id ? '<i class="fas fa-check text-accent text-sm ml-2 shrink-0"></i>' : '<div class="w-3.5 ml-2 shrink-0"></div>'}
             `;
             div.addEventListener('click', () => {
                 appState.market = market;
-                selectedFlag.className = `fi fi-${market.flag} fis rounded-full w-8 h-8 md:w-[38px] md:h-[38px] block group-hover:scale-110 transition-transform shadow-sm border border-zinc-200 dark:border-zinc-700`;
-                selectedFlag.style.backgroundSize = "cover";
-                selectedFlag.style.backgroundPosition = "center";
+                selectedFlag.style.backgroundImage = `url('https://flagcdn.com/1x1/${market.flag}.svg')`;
                 countryDropdown.classList.remove('opacity-100', 'scale-100');
                 countryDropdown.classList.add('opacity-0', 'scale-95');
                 setTimeout(() => countryDropdown.classList.add('hidden'), 200);
