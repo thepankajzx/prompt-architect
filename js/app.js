@@ -440,6 +440,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
+// Global toast hide function
+window.hideToast = function(toastId) {
+    const el = document.getElementById(toastId);
+    if(el) {
+        el.classList.add('opacity-0', 'pointer-events-none');
+        el.classList.remove('opacity-100');
+    }
+};
+
 // Global shake animation style
 const style = document.createElement('style');
 style.innerHTML = `
