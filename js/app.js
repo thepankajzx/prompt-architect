@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Theme Management ---
     const htmlEl = document.documentElement;
     const themeToggleBtn = document.getElementById('theme-toggle');
+    const mobileThemeToggleBtn = document.getElementById('mobile-theme-toggle');
     
     // Initialize Theme from localStorage or system preference
     if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -13,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         htmlEl.classList.remove('dark');
     }
 
-    themeToggleBtn.addEventListener('click', () => {
+    const toggleTheme = () => {
         if (htmlEl.classList.contains('dark')) {
             htmlEl.classList.remove('dark');
             localStorage.setItem('theme', 'light');
@@ -21,7 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
             htmlEl.classList.add('dark');
             localStorage.setItem('theme', 'dark');
         }
-    });
+    };
+
+    themeToggleBtn.addEventListener('click', toggleTheme);
+    if(mobileThemeToggleBtn) mobileThemeToggleBtn.addEventListener('click', toggleTheme);
 
     // --- State Management ---
     let appState = {
@@ -155,7 +159,51 @@ document.addEventListener('DOMContentLoaded', () => {
     
     btnEditCategories.addEventListener('click', goToState2);
 
+    // Mobile Dropdown Logic
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileDropdown = document.getElementById('mobile-dropdown');
+    
+    if (mobileMenuBtn && mobileDropdown) {
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (mobileDropdown.classList.contains('hidden')) {
+                mobileDropdown.classList.remove('hidden');
+                // trigger transition
+                setTimeout(() => {
+                    mobileDropdown.classList.remove('opacity-0', 'scale-95');
+                    mobileDropdown.classList.add('opacity-100', 'scale-100');
+                }, 10);
+            } else {
+                mobileDropdown.classList.remove('opacity-100', 'scale-100');
+                mobileDropdown.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => mobileDropdown.classList.add('hidden'), 200);
+            }
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!mobileMenuBtn.contains(e.target) && !mobileDropdown.contains(e.target) && !mobileDropdown.classList.contains('hidden')) {
+                mobileDropdown.classList.remove('opacity-100', 'scale-100');
+                mobileDropdown.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => mobileDropdown.classList.add('hidden'), 200);
+            }
+        });
+    }
+
     navVisualizer.addEventListener('click', goToVisualizer);
+    
+    const mobileNavVisualizer = document.getElementById('mobile-nav-visualizer');
+    if(mobileNavVisualizer) {
+        mobileNavVisualizer.addEventListener('click', () => {
+            if (mobileDropdown && !mobileDropdown.classList.contains('hidden')) {
+                mobileDropdown.classList.remove('opacity-100', 'scale-100');
+                mobileDropdown.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => mobileDropdown.classList.add('hidden'), 200);
+            }
+            goToVisualizer();
+        });
+    }
+
     btnCloseVisualizer.addEventListener('click', () => {
         if (appState.selectedCategories.length > 0) goToState3();
         else if (appState.ticker) goToState2();
@@ -315,14 +363,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Logic: Free Plan Warning ---
+    // --- Logic: Free Plan Warning & Format Toggle ---
+    const outputFormatContainer = document.getElementById('output-format-container');
     function updatePlanWarnings() {
         const isFree = planSelect.value === 'free';
         const isVisual = document.querySelector('input[name="output_format"]:checked').value === 'visual';
         
-        if (isFree && isVisual) freePlanWarning.classList.remove('hidden');
-        else freePlanWarning.classList.add('hidden');
+        if (isFree) {
+            outputFormatContainer.classList.add('hidden');
+            // Force reset to text if free is selected
+            document.querySelector('input[name="output_format"][value="text"]').checked = true;
+            freePlanWarning.classList.add('hidden');
+        } else {
+            outputFormatContainer.classList.remove('hidden');
+            if (isVisual) freePlanWarning.classList.remove('hidden');
+            else freePlanWarning.classList.add('hidden');
+        }
     }
+    
+    // Call on init to set the default state
+    updatePlanWarnings();
+    
     planSelect.addEventListener('change', updatePlanWarnings);
     formatRadios.forEach(radio => radio.addEventListener('change', updatePlanWarnings));
 
