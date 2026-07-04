@@ -36,21 +36,21 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const globalMarkets = [
-        { id: 'US', flag: '🇺🇸', name: 'United States', exchange: 'NYSE / NASDAQ' },
-        { id: 'IN', flag: '🇮🇳', name: 'India', exchange: 'NSE / BSE' },
-        { id: 'GB', flag: '🇬🇧', name: 'United Kingdom', exchange: 'LSE' },
-        { id: 'JP', flag: '🇯🇵', name: 'Japan', exchange: 'TSE' },
-        { id: 'CN', flag: '🇨🇳', name: 'China', exchange: 'SSE / SZSE' },
-        { id: 'HK', flag: '🇭🇰', name: 'Hong Kong', exchange: 'HKEX' },
-        { id: 'SG', flag: '🇸🇬', name: 'Singapore', exchange: 'SGX' },
-        { id: 'CA', flag: '🇨🇦', name: 'Canada', exchange: 'TSX' },
-        { id: 'AU', flag: '🇦🇺', name: 'Australia', exchange: 'ASX' },
-        { id: 'DE', flag: '🇩🇪', name: 'Germany', exchange: 'XETRA' },
-        { id: 'FR', flag: '🇫🇷', name: 'France', exchange: 'Euronext Paris' },
-        { id: 'CH', flag: '🇨🇭', name: 'Switzerland', exchange: 'SIX' },
-        { id: 'KR', flag: '🇰🇷', name: 'South Korea', exchange: 'KRX' },
-        { id: 'TW', flag: '🇹🇼', name: 'Taiwan', exchange: 'TWSE' },
-        { id: 'BR', flag: '🇧🇷', name: 'Brazil', exchange: 'B3' }
+        { id: 'US', flag: 'us', name: 'United States', exchange: 'NYSE / NASDAQ' },
+        { id: 'IN', flag: 'in', name: 'India', exchange: 'NSE / BSE' },
+        { id: 'GB', flag: 'gb', name: 'United Kingdom', exchange: 'LSE' },
+        { id: 'JP', flag: 'jp', name: 'Japan', exchange: 'TSE' },
+        { id: 'CN', flag: 'cn', name: 'China', exchange: 'SSE / SZSE' },
+        { id: 'HK', flag: 'hk', name: 'Hong Kong', exchange: 'HKEX' },
+        { id: 'SG', flag: 'sg', name: 'Singapore', exchange: 'SGX' },
+        { id: 'CA', flag: 'ca', name: 'Canada', exchange: 'TSX' },
+        { id: 'AU', flag: 'au', name: 'Australia', exchange: 'ASX' },
+        { id: 'DE', flag: 'de', name: 'Germany', exchange: 'XETRA' },
+        { id: 'FR', flag: 'fr', name: 'France', exchange: 'Euronext Paris' },
+        { id: 'CH', flag: 'ch', name: 'Switzerland', exchange: 'SIX' },
+        { id: 'KR', flag: 'kr', name: 'South Korea', exchange: 'KRX' },
+        { id: 'TW', flag: 'tw', name: 'Taiwan', exchange: 'TWSE' },
+        { id: 'BR', flag: 'br', name: 'Brazil', exchange: 'B3' }
     ];
 
     // --- DOM Elements ---
@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectedFlag = document.getElementById('selected-flag');
 
     appState.market = globalMarkets[0];
-    selectedFlag.textContent = appState.market.flag;
+    selectedFlag.className = `fi fi-${appState.market.flag} fis rounded-full text-2xl group-hover:scale-110 transition-transform shadow-sm border border-zinc-200 dark:border-zinc-700`;
 
     function renderMarkets(markets) {
         countryList.innerHTML = '';
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
             div.className = 'flex items-center justify-between p-3 hover:bg-zinc-100 dark:hover:bg-zinc-700/50 rounded-xl cursor-pointer transition-colors';
             div.innerHTML = `
                 <div class="flex items-center gap-3">
-                    <span class="text-xl">${market.flag}</span>
+                    <span class="fi fi-${market.flag} fis rounded-full w-6 h-6 border border-zinc-200 dark:border-zinc-700 shadow-sm" style="background-size: cover; background-position: center;"></span>
                     <div class="flex flex-col">
                         <span class="text-sm font-bold text-zinc-900 dark:text-white leading-tight">${market.name}</span>
                         <span class="text-[10px] text-zinc-500 font-medium">${market.exchange}</span>
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             div.addEventListener('click', () => {
                 appState.market = market;
-                selectedFlag.textContent = market.flag;
+                selectedFlag.className = `fi fi-${market.flag} fis rounded-full text-2xl group-hover:scale-110 transition-transform shadow-sm border border-zinc-200 dark:border-zinc-700`;
                 countryDropdown.classList.remove('opacity-100', 'scale-100');
                 countryDropdown.classList.add('opacity-0', 'scale-95');
                 setTimeout(() => countryDropdown.classList.add('hidden'), 200);
