@@ -147,17 +147,66 @@
                 A premium prompt engineering platform designed to extract deep, expert-level financial analysis from modern AI models.
             </p>
 
-            <div class="w-full max-w-xl relative group px-2 md:px-0">
-                <input type="text" id="ticker-input" 
-                    class="hero-input w-full bg-white dark:bg-darkSurface border border-zinc-300 dark:border-darkBorder rounded-full py-3.5 md:py-5 pl-5 md:pl-8 pr-[3.5rem] md:pr-20 text-sm sm:text-base md:text-lg text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 shadow-sm dark:shadow-none outline-none transition-all"
-                    placeholder="Enter Company (e.g., AAPL)">
-                
-                <button id="btn-continue-1" 
-                    class="absolute right-3 md:right-2 top-1.5 md:top-2 bottom-1.5 md:bottom-2 aspect-square bg-accent hover:bg-blue-600 rounded-full flex items-center justify-center text-white transition-all transform hover:scale-105 shadow-md text-sm md:text-base">
-                    <i class="fas fa-arrow-right"></i>
-                </button>
+            <div class="w-full max-w-xl relative flex items-center justify-center gap-2 md:gap-3 px-2 md:px-0">
+                <!-- Country Selector Button -->
+                <div class="relative z-[60]">
+                    <button id="btn-country-selector" class="h-12 w-12 md:h-[60px] md:w-[60px] bg-white/80 dark:bg-darkSurface/80 backdrop-blur-md border border-zinc-300 dark:border-darkBorder rounded-full flex items-center justify-center shadow-sm transition-all hover:bg-white dark:hover:bg-darkSurface hover:shadow-md active:scale-95 group shrink-0">
+                        <span id="selected-flag" class="text-xl md:text-2xl group-hover:scale-110 transition-transform">🇺🇸</span>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div id="country-dropdown" class="absolute top-[calc(100%+8px)] left-0 w-[280px] bg-white/95 dark:bg-zinc-800/95 backdrop-blur-xl border border-zinc-200 dark:border-zinc-700 rounded-2xl shadow-2xl flex-col hidden opacity-0 transform scale-95 transition-all duration-200 origin-top-left overflow-hidden">
+                        <div class="p-2 border-b border-zinc-200 dark:border-zinc-700">
+                            <input type="text" id="country-search" class="w-full bg-zinc-100 dark:bg-zinc-900 border-none rounded-xl py-2 px-3 text-sm text-zinc-900 dark:text-white placeholder-zinc-500 outline-none focus:ring-1 focus:ring-accent" placeholder="Search markets...">
+                        </div>
+                        <div class="max-h-[300px] overflow-y-auto custom-scrollbar p-1" id="country-list">
+                            <!-- Items injected by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ticker Input Container -->
+                <div class="relative flex-1 group">
+                    <input type="text" id="ticker-input" 
+                        class="hero-input w-full bg-white dark:bg-darkSurface border border-zinc-300 dark:border-darkBorder rounded-full py-3.5 md:py-5 pl-5 md:pl-6 pr-[3.5rem] md:pr-16 text-sm sm:text-base md:text-lg text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 shadow-sm outline-none transition-all focus:border-accent dark:focus:border-accent"
+                        placeholder="Enter Company (e.g., AAPL)">
+                    
+                    <button id="btn-continue-1" 
+                        class="absolute right-3 md:right-2 top-1.5 md:top-2 bottom-1.5 md:bottom-2 aspect-square bg-accent hover:bg-blue-600 rounded-full flex items-center justify-center text-white transition-all transform hover:scale-105 shadow-md text-sm md:text-base">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
             </div>
+
             <p id="ticker-error" class="text-finRed text-sm mt-3 hidden">Please enter a valid company name or ticker.</p>
+
+            <!-- Loading State -->
+            <div id="validation-loading" class="mt-6 flex flex-col items-center justify-center gap-3 hidden fade-in h-[120px]">
+                <div class="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+                <span class="text-zinc-500 dark:text-zinc-400 text-xs md:text-sm font-medium animate-pulse" id="validation-status-text">Checking Company Listing...</span>
+            </div>
+
+            <!-- Validation Error Card -->
+            <div id="validation-error-card" class="mt-6 w-full max-w-lg bg-white/80 dark:bg-zinc-800/80 backdrop-blur-md border border-finRed/30 rounded-2xl p-4 md:p-6 shadow-lg text-left hidden fade-in mx-auto relative z-10">
+                <div class="flex items-start gap-3 md:gap-4">
+                    <div class="w-8 h-8 rounded-full bg-finRed/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <i class="fas fa-exclamation-circle text-finRed"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-zinc-900 dark:text-white font-bold text-base md:text-lg mb-1">Company Not Found</h4>
+                        <p class="text-zinc-600 dark:text-zinc-400 text-xs md:text-sm leading-relaxed mb-4">
+                            We couldn't find a publicly listed company matching your input in the selected market. Please check the company name or ticker symbol and try again.
+                        </p>
+                        <div class="flex gap-2 md:gap-3">
+                            <button id="btn-search-again" class="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-4 py-2 rounded-lg text-xs md:text-sm font-bold transition-transform hover:scale-105 shadow-md">
+                                Search Again
+                            </button>
+                            <button id="btn-edit-input" class="bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-600 px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition-colors shadow-sm">
+                                Edit Input
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- ========================================== -->

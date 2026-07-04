@@ -28,11 +28,30 @@ document.addEventListener('DOMContentLoaded', () => {
     if(mobileThemeToggleBtn) mobileThemeToggleBtn.addEventListener('click', toggleTheme);
 
     // --- State Management ---
-    let appState = {
-        ticker: "",
-        selectedCategories: [], // max 2
-        selectedMiniTabs: []    // unlimited (or max 5 if custom)
+    const appState = {
+        ticker: '',
+        market: null, // Will be set on init
+        selectedCategories: [],
+        selectedMiniTabs: []
     };
+
+    const globalMarkets = [
+        { id: 'US', flag: '🇺🇸', name: 'United States', exchange: 'NYSE / NASDAQ' },
+        { id: 'IN', flag: '🇮🇳', name: 'India', exchange: 'NSE / BSE' },
+        { id: 'GB', flag: '🇬🇧', name: 'United Kingdom', exchange: 'LSE' },
+        { id: 'JP', flag: '🇯🇵', name: 'Japan', exchange: 'TSE' },
+        { id: 'CN', flag: '🇨🇳', name: 'China', exchange: 'SSE / SZSE' },
+        { id: 'HK', flag: '🇭🇰', name: 'Hong Kong', exchange: 'HKEX' },
+        { id: 'SG', flag: '🇸🇬', name: 'Singapore', exchange: 'SGX' },
+        { id: 'CA', flag: '🇨🇦', name: 'Canada', exchange: 'TSX' },
+        { id: 'AU', flag: '🇦🇺', name: 'Australia', exchange: 'ASX' },
+        { id: 'DE', flag: '🇩🇪', name: 'Germany', exchange: 'XETRA' },
+        { id: 'FR', flag: '🇫🇷', name: 'France', exchange: 'Euronext Paris' },
+        { id: 'CH', flag: '🇨🇭', name: 'Switzerland', exchange: 'SIX' },
+        { id: 'KR', flag: '🇰🇷', name: 'South Korea', exchange: 'KRX' },
+        { id: 'TW', flag: '🇹🇼', name: 'Taiwan', exchange: 'TWSE' },
+        { id: 'BR', flag: '🇧🇷', name: 'Brazil', exchange: 'B3' }
+    ];
 
     // --- DOM Elements ---
     const state1 = document.getElementById('state-1');
@@ -108,13 +127,143 @@ document.addEventListener('DOMContentLoaded', () => {
         tickerInput.focus();
     }
 
-    function goToState2() {
+    // --- Market Selector Logic ---
+    const btnCountrySelector = document.getElementById('btn-country-selector');
+    const countryDropdown = document.getElementById('country-dropdown');
+    const countryList = document.getElementById('country-list');
+    const countrySearch = document.getElementById('country-search');
+    const selectedFlag = document.getElementById('selected-flag');
+
+    appState.market = globalMarkets[0];
+    selectedFlag.textContent = appState.market.flag;
+
+    function renderMarkets(markets) {
+        countryList.innerHTML = '';
+        markets.forEach(market => {
+            const div = document.createElement('div');
+            div.className = 'flex items-center justify-between p-3 hover:bg-zinc-100 dark:hover:bg-zinc-700/50 rounded-xl cursor-pointer transition-colors';
+            div.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <span class="text-xl">${market.flag}</span>
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold text-zinc-900 dark:text-white leading-tight">${market.name}</span>
+                        <span class="text-[10px] text-zinc-500 font-medium">${market.exchange}</span>
+                    </div>
+                </div>
+                ${appState.market.id === market.id ? '<i class="fas fa-check text-accent text-sm"></i>' : ''}
+            `;
+            div.addEventListener('click', () => {
+                appState.market = market;
+                selectedFlag.textContent = market.flag;
+                countryDropdown.classList.remove('opacity-100', 'scale-100');
+                countryDropdown.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => countryDropdown.classList.add('hidden'), 200);
+            });
+            countryList.appendChild(div);
+        });
+    }
+
+    if (btnCountrySelector && countryDropdown) {
+        btnCountrySelector.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (countryDropdown.classList.contains('hidden')) {
+                renderMarkets(globalMarkets);
+                countryDropdown.classList.remove('hidden');
+                setTimeout(() => {
+                    countryDropdown.classList.remove('opacity-0', 'scale-95');
+                    countryDropdown.classList.add('opacity-100', 'scale-100');
+                }, 10);
+                countrySearch.value = '';
+                countrySearch.focus();
+            } else {
+                countryDropdown.classList.remove('opacity-100', 'scale-100');
+                countryDropdown.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => countryDropdown.classList.add('hidden'), 200);
+            }
+        });
+
+        countrySearch.addEventListener('input', (e) => {
+            const q = e.target.value.toLowerCase();
+            const filtered = globalMarkets.filter(m => 
+                m.name.toLowerCase().includes(q) || 
+                m.exchange.toLowerCase().includes(q)
+            );
+            renderMarkets(filtered);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!countryDropdown.contains(e.target) && !btnCountrySelector.contains(e.target) && !countryDropdown.classList.contains('hidden')) {
+                countryDropdown.classList.remove('opacity-100', 'scale-100');
+                countryDropdown.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => countryDropdown.classList.add('hidden'), 200);
+            }
+        });
+    }
+
+    // --- Validation Logic ---
+    const validationLoading = document.getElementById('validation-loading');
+    const validationErrorCard = document.getElementById('validation-error-card');
+    const btnSearchAgain = document.getElementById('btn-search-again');
+    const btnEditInput = document.getElementById('btn-edit-input');
+    const inputContainer = tickerInput.parentElement.parentElement; // The flex container wrapping selector and input
+
+    async function validateCompany(ticker) {
+        try {
+            // Use public Yahoo Finance search API
+            const res = await fetch(`https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(ticker)}&quotesCount=5`);
+            if (!res.ok) return true; // CORS/Network block -> fallback to AI validation
+            
+            const data = await res.json();
+            if (data && data.quotes) {
+                // If API succeeds but returns absolutely no results, the company is invalid
+                if (data.quotes.length === 0) return false;
+                // Otherwise we pass it to AI for strict country/exchange matching
+                return true;
+            }
+            return true;
+        } catch (e) {
+            // CORS or AdBlock blocks the request -> fallback to AI validation
+            return true;
+        }
+    }
+
+    if (btnSearchAgain) btnSearchAgain.addEventListener('click', resetValidationUI);
+    if (btnEditInput) btnEditInput.addEventListener('click', () => {
+        resetValidationUI();
+        tickerInput.focus();
+    });
+
+    function resetValidationUI() {
+        validationErrorCard.classList.add('hidden');
+        inputContainer.classList.remove('hidden');
+        tickerInput.value = '';
+    }
+
+    async function goToState2() {
         const ticker = tickerInput.value.trim();
         if (!ticker) {
             tickerError.classList.remove('hidden');
             return;
         }
         tickerError.classList.add('hidden');
+        
+        // Hide Input and show Loading
+        inputContainer.classList.add('hidden');
+        validationLoading.classList.remove('hidden');
+
+        // Execute Validation
+        const isValid = await validateCompany(ticker);
+
+        // Hide Loading
+        validationLoading.classList.add('hidden');
+
+        if (!isValid) {
+            validationErrorCard.classList.remove('hidden');
+            return;
+        }
+
+        // Proceed to State 2
+        inputContainer.classList.remove('hidden');
         appState.ticker = ticker;
         displayTicker2.textContent = ticker;
         
@@ -424,7 +573,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const outputFormat = hiddenOutputFormat ? hiddenOutputFormat.value : 'text';
 
         // Generate the complex prompt
-        const finalPrompt = PromptEngine.generate(appState.ticker, appState.selectedMiniTabs, aiModel, aiPlan, outputFormat);
+        const finalPrompt = PromptEngine.generate(appState.ticker, appState.market, appState.selectedMiniTabs, aiModel, aiPlan, outputFormat);
 
         // Copy to Clipboard
         navigator.clipboard.writeText(finalPrompt).then(() => {

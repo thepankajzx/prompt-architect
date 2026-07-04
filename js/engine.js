@@ -1,27 +1,34 @@
 // js/engine.js
 
 class PromptEngine {
-    static generate(ticker, selectedModules, aiModelId, aiPlanId, outputFormat) {
+    static generate(ticker, market, selectedModules, aiModelId, aiPlanId, outputFormat) {
         
-        // 1. Gather all unique expert roles
+        // 1. Strict Verification Directive
+        const strictValidation = `[STRICT VERIFICATION DIRECTIVE - CRITICAL]
+Before performing any financial analysis, first verify that the entered company (${ticker}) is publicly listed on the ${market.name} stock exchange (${market.exchange}).
+If the company cannot be verified as a publicly listed company in that market, stop immediately and return ONLY this exact message:
+"Company not found in the selected stock market. Please verify the company name or ticker symbol and try again."
+Do not guess, do not assume, and do not generate fictional analysis for private or unlisted entities.`;
+
+        // 2. Gather all unique expert roles
         const roles = [...new Set(selectedModules.map(m => m.expertRole))].join(" and ");
         
-        // 2. Gather all objectives (replace {companyName} with the actual ticker)
+        // 3. Gather all objectives (replace {companyName} with the actual ticker)
         const objectives = selectedModules.map(m => m.objective.replace(/{companyName}/g, ticker))
             .map(obj => `• ${obj}`)
             .join("\n");
             
-        // 3. Gather all required metrics
+        // 4. Gather all required metrics
         const metrics = selectedModules.map(m => m.metrics)
             .map(m => `• ${m}`)
             .join("\n");
             
-        // 4. Gather all analysis frameworks
+        // 5. Gather all analysis frameworks
         const frameworks = selectedModules.map(m => m.framework)
             .map(f => `• ${f}`)
             .join("\n");
 
-        // 5. Fetch AI Model specific rules and Plan constraints
+        // 6. Fetch AI Model specific rules and Plan constraints
         const modelRules = promptData.aiModels[aiModelId]?.rules || "";
         
         let planRules = "";
@@ -31,7 +38,7 @@ class PromptEngine {
             planRules = "Leverage maximum context capabilities. Provide exhaustive reasoning, deep historical context, and comprehensive multi-factor analysis.";
         }
 
-        // 6. Output Format Logic (Visual vs Text)
+        // 7. Output Format Logic (Visual vs Text)
         let formatInstructions = "";
         if (outputFormat === "visual") {
             formatInstructions = `
@@ -47,10 +54,14 @@ Provide the output ENTIRELY in raw HTML format.
 Provide a well-structured, highly readable text report. Use Markdown headings, bullet points, and bold text for emphasis. Ensure it is easy to read and follows a logical flow.`;
         }
 
-        // 7. Assemble the final Master Prompt
+        // 8. Assemble the final Master Prompt
         const finalPrompt = `
+${strictValidation}
+
+---
 [TARGET ASSET]
 Company / Ticker: ${ticker}
+Market Context: ${market.name} (${market.exchange})
 
 [EXPERT PERSONA]
 Assume the combined roles of a ${roles}. 
