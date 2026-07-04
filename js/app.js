@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectedFlag = document.getElementById('selected-flag');
 
     appState.market = globalMarkets[0];
-    selectedFlag.className = `fi fi-${appState.market.flag} fis rounded-full text-2xl group-hover:scale-110 transition-transform shadow-sm border border-zinc-200 dark:border-zinc-700`;
+    selectedFlag.className = `fi fi-${appState.market.flag} fis rounded-full w-8 h-8 md:w-[38px] md:h-[38px] block group-hover:scale-110 transition-transform shadow-sm border border-zinc-200 dark:border-zinc-700`;
     selectedFlag.style.backgroundSize = "cover";
     selectedFlag.style.backgroundPosition = "center";
 
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
             div.className = 'flex items-center justify-between p-3 hover:bg-zinc-100 dark:hover:bg-zinc-700/50 rounded-xl cursor-pointer transition-colors';
             div.innerHTML = `
                 <div class="flex items-center gap-3">
-                    <span class="fi fi-${market.flag} fis rounded-full w-6 h-6 border border-zinc-200 dark:border-zinc-700 shadow-sm" style="background-size: cover !important; background-position: center !important;"></span>
+                    <span class="fi fi-${market.flag} fis rounded-full w-6 h-6 block shrink-0 border border-zinc-200 dark:border-zinc-700 shadow-sm" style="background-size: cover !important; background-position: center !important;"></span>
                     <div class="flex flex-col">
                         <span class="text-sm font-bold text-zinc-900 dark:text-white leading-tight">${market.name}</span>
                         <span class="text-[10px] text-zinc-500 font-medium">${market.exchange}</span>
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             div.addEventListener('click', () => {
                 appState.market = market;
-                selectedFlag.className = `fi fi-${market.flag} fis rounded-full text-2xl group-hover:scale-110 transition-transform shadow-sm border border-zinc-200 dark:border-zinc-700`;
+                selectedFlag.className = `fi fi-${market.flag} fis rounded-full w-8 h-8 md:w-[38px] md:h-[38px] block group-hover:scale-110 transition-transform shadow-sm border border-zinc-200 dark:border-zinc-700`;
                 selectedFlag.style.backgroundSize = "cover";
                 selectedFlag.style.backgroundPosition = "center";
                 countryDropdown.classList.remove('opacity-100', 'scale-100');
