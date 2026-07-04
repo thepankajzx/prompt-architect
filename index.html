@@ -201,8 +201,8 @@
 
         <!-- Premium Toast Notifications -->
         <div id="max-cat-toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-white dark:bg-darkSurface border border-yellow-500/30 p-4 md:p-5 rounded-xl shadow-2xl transition-all duration-300 opacity-0 pointer-events-none z-[100] max-w-sm w-[90%] text-center">
-            <button onclick="hideToast('max-cat-toast')" class="absolute top-2 right-2 md:top-3 md:right-3 w-6 h-6 flex items-center justify-center text-white bg-black rounded-full transition-transform hover:scale-110 shadow-md pointer-events-auto z-10">
-                <i class="fas fa-times text-[10px]"></i>
+            <button onclick="hideToast('max-cat-toast')" class="absolute -top-3 -right-3 w-8 h-8 flex items-center justify-center text-white bg-black hover:bg-zinc-800 rounded-full transition-transform hover:scale-110 shadow-lg cursor-pointer z-50 pointer-events-auto">
+                <i class="fas fa-times text-xs"></i>
             </button>
             <div class="text-finGold text-2xl mb-2 mt-1"><i class="fas fa-crown"></i></div>
             <h4 class="font-bold text-zinc-900 dark:text-white mb-1">Unlock Premium</h4>
@@ -213,8 +213,8 @@
         </div>
         
         <div id="premium-toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-white dark:bg-darkSurface border border-yellow-500/30 p-4 md:p-5 rounded-xl shadow-2xl transition-all duration-300 opacity-0 pointer-events-none z-[100] max-w-sm w-[90%] text-center">
-            <button onclick="hideToast('premium-toast')" class="absolute top-2 right-2 md:top-3 md:right-3 w-6 h-6 flex items-center justify-center text-white bg-black rounded-full transition-transform hover:scale-110 shadow-md pointer-events-auto z-10">
-                <i class="fas fa-times text-[10px]"></i>
+            <button onclick="hideToast('premium-toast')" class="absolute -top-3 -right-3 w-8 h-8 flex items-center justify-center text-white bg-black hover:bg-zinc-800 rounded-full transition-transform hover:scale-110 shadow-lg cursor-pointer z-50 pointer-events-auto">
+                <i class="fas fa-times text-xs"></i>
             </button>
             <div class="text-finGold text-2xl mb-2 mt-1"><i class="fas fa-crown"></i></div>
             <h4 class="font-bold text-zinc-900 dark:text-white mb-1">Unlock Premium</h4>
@@ -276,20 +276,14 @@
                             </div>
                             <div id="output-format-container" class="hidden">
                                 <label class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-2">Output Format</label>
-                                <div class="space-y-3">
-                                    <label class="flex items-center space-x-3 cursor-pointer">
-                                        <input type="radio" name="output_format" value="text" checked class="w-4 h-4 text-accent focus:ring-accent bg-zinc-100 border-zinc-300 dark:bg-zinc-900 dark:border-zinc-700">
-                                        <span class="text-sm text-zinc-700 dark:text-zinc-300">Structured Text</span>
-                                    </label>
-                                    <label class="flex items-center space-x-3 cursor-pointer relative group">
-                                        <input type="radio" name="output_format" value="visual" class="w-4 h-4 text-accent focus:ring-accent bg-zinc-100 border-zinc-300 dark:bg-zinc-900 dark:border-zinc-700">
-                                        <span class="text-sm text-zinc-900 dark:text-white font-medium">Visual (HTML) <i class="fas fa-bolt text-finGold ml-1"></i></span>
-                                        <!-- Warning for Free Plan -->
-                                        <div id="free-plan-warning" class="hidden absolute top-full left-0 mt-2 w-full bg-white dark:bg-zinc-800 border border-finRed/50 p-2 rounded-lg shadow-xl text-xs text-zinc-600 dark:text-zinc-300 z-10">
-                                            <i class="fas fa-exclamation-triangle text-finRed mr-1"></i>
-                                            <strong>Warning:</strong> Free models may fail at complex HTML. Text is recommended.
-                                        </div>
-                                    </label>
+                                <input type="hidden" id="hidden_output_format" name="output_format" value="text">
+                                <div class="flex bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl w-full border border-zinc-200 dark:border-zinc-700 shadow-inner">
+                                    <button type="button" id="tab-format-text" class="flex-1 py-2 text-xs md:text-sm font-bold rounded-lg bg-white dark:bg-zinc-700 shadow text-zinc-900 dark:text-white transition-all text-center flex items-center justify-center gap-1.5 md:gap-2">
+                                        <i class="fas fa-align-left text-accent"></i> Text
+                                    </button>
+                                    <button type="button" id="tab-format-visual" class="flex-1 py-2 text-xs md:text-sm font-medium rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-all text-center flex items-center justify-center gap-1.5 md:gap-2">
+                                        <i class="fas fa-bolt text-finGold"></i> Visual
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -318,16 +312,20 @@
                         <p class="text-xs md:text-sm text-zinc-500 dark:text-zinc-400">Paste raw HTML generated by AI below.</p>
                     </div>
                     <div class="flex flex-wrap space-x-2 gap-y-2">
-                        <button id="btn-render-html" class="bg-accent hover:bg-blue-600 text-white px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition-colors shadow-sm">
-                            <i class="fas fa-play mr-1 md:mr-2"></i>Render
+                        <button id="btn-render-html" class="bg-accent hover:bg-blue-600 text-white px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-bold transition-transform shadow flex items-center gap-2 hover:scale-105 active:scale-95">
+                            <i class="fas fa-play"></i>Render
                         </button>
-                        <button id="btn-download-html" class="bg-white hover:bg-zinc-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition-colors shadow-sm dark:shadow-none">
-                            <i class="fas fa-code mr-1 md:mr-2"></i>.html
+                        <button id="btn-download-html" class="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-bold transition-transform shadow flex items-center gap-1.5 md:gap-2 hover:scale-105 active:scale-95">
+                            <i class="fab fa-html5 text-base md:text-lg"></i>
+                            <span>HTML</span>
+                            <i class="fas fa-download text-[10px] md:text-xs opacity-80"></i>
                         </button>
-                        <button id="btn-download-pdf" class="bg-white hover:bg-zinc-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition-colors shadow-sm dark:shadow-none">
-                            <i class="fas fa-file-pdf mr-1 md:mr-2"></i>.pdf
+                        <button id="btn-download-pdf" class="bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-bold transition-transform shadow flex items-center gap-1.5 md:gap-2 hover:scale-105 active:scale-95">
+                            <i class="fas fa-file-pdf text-base md:text-lg"></i>
+                            <span>PDF</span>
+                            <i class="fas fa-download text-[10px] md:text-xs opacity-80"></i>
                         </button>
-                        <button id="btn-close-visualizer" class="text-zinc-400 hover:text-zinc-900 dark:hover:text-white px-2 py-2">
+                        <button id="btn-close-visualizer" class="text-zinc-400 hover:text-zinc-900 dark:hover:text-white px-2 py-2 ml-1">
                             <i class="fas fa-times text-lg"></i>
                         </button>
                     </div>

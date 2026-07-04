@@ -363,21 +363,47 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Logic: Free Plan Warning & Format Toggle ---
+    // --- Logic: Output Format Tabs ---
+    const hiddenOutputFormat = document.getElementById('hidden_output_format');
+    const tabFormatText = document.getElementById('tab-format-text');
+    const tabFormatVisual = document.getElementById('tab-format-visual');
+
+    const updateFormatTabs = () => {
+        if (!hiddenOutputFormat || !tabFormatText || !tabFormatVisual) return;
+        if (hiddenOutputFormat.value === 'text') {
+            tabFormatText.className = 'flex-1 py-2 text-xs md:text-sm font-bold rounded-lg bg-white dark:bg-zinc-700 shadow text-zinc-900 dark:text-white transition-all text-center flex items-center justify-center gap-1.5 md:gap-2';
+            tabFormatVisual.className = 'flex-1 py-2 text-xs md:text-sm font-medium rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-all text-center flex items-center justify-center gap-1.5 md:gap-2';
+        } else {
+            tabFormatVisual.className = 'flex-1 py-2 text-xs md:text-sm font-bold rounded-lg bg-white dark:bg-zinc-700 shadow text-zinc-900 dark:text-white transition-all text-center flex items-center justify-center gap-1.5 md:gap-2';
+            tabFormatText.className = 'flex-1 py-2 text-xs md:text-sm font-medium rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-all text-center flex items-center justify-center gap-1.5 md:gap-2';
+        }
+    };
+
+    if (tabFormatText && tabFormatVisual) {
+        tabFormatText.addEventListener('click', () => {
+            hiddenOutputFormat.value = 'text';
+            updateFormatTabs();
+        });
+        tabFormatVisual.addEventListener('click', () => {
+            hiddenOutputFormat.value = 'visual';
+            updateFormatTabs();
+        });
+    }
+
+    // --- Logic: Free Plan & Format Toggle ---
     const outputFormatContainer = document.getElementById('output-format-container');
     function updatePlanWarnings() {
         const isFree = planSelect.value === 'free';
-        const isVisual = document.querySelector('input[name="output_format"]:checked').value === 'visual';
         
         if (isFree) {
-            outputFormatContainer.classList.add('hidden');
+            if (outputFormatContainer) outputFormatContainer.classList.add('hidden');
             // Force reset to text if free is selected
-            document.querySelector('input[name="output_format"][value="text"]').checked = true;
-            freePlanWarning.classList.add('hidden');
+            if (hiddenOutputFormat) {
+                hiddenOutputFormat.value = 'text';
+                updateFormatTabs();
+            }
         } else {
-            outputFormatContainer.classList.remove('hidden');
-            if (isVisual) freePlanWarning.classList.remove('hidden');
-            else freePlanWarning.classList.add('hidden');
+            if (outputFormatContainer) outputFormatContainer.classList.remove('hidden');
         }
     }
     
@@ -385,7 +411,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updatePlanWarnings();
     
     planSelect.addEventListener('change', updatePlanWarnings);
-    formatRadios.forEach(radio => radio.addEventListener('change', updatePlanWarnings));
 
     // --- Generate & Copy Action ---
     btnGenerate.addEventListener('click', () => {
@@ -396,7 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const aiModel = modelSelect.value;
         const aiPlan = planSelect.value;
-        const outputFormat = document.querySelector('input[name="output_format"]:checked').value;
+        const outputFormat = hiddenOutputFormat ? hiddenOutputFormat.value : 'text';
 
         // Generate the complex prompt
         const finalPrompt = PromptEngine.generate(appState.ticker, appState.selectedMiniTabs, aiModel, aiPlan, outputFormat);
