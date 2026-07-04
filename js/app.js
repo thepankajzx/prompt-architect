@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectedFlag = document.getElementById('selected-flag');
 
     appState.market = globalMarkets[0];
-    selectedFlag.style.backgroundImage = `url('https://flagcdn.com/1x1/${appState.market.flag}.svg')`;
+    selectedFlag.style.backgroundImage = `url('https://flagcdn.com/${appState.market.flag}.svg')`;
 
     function renderMarkets(markets) {
         countryList.innerHTML = '';
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const div = document.createElement('div');
             div.className = 'flex items-center p-3 hover:bg-zinc-100 dark:hover:bg-zinc-700/50 rounded-xl cursor-pointer transition-colors';
             div.innerHTML = `
-                <div class="w-8 h-8 rounded-full bg-cover bg-center border border-zinc-200 dark:border-zinc-700 shadow-sm shrink-0 mr-3.5" style="background-image: url('https://flagcdn.com/1x1/${market.flag}.svg');"></div>
+                <div class="w-8 h-8 rounded-full bg-cover bg-center border border-zinc-200 dark:border-zinc-700 shadow-sm shrink-0 mr-3.5" style="background-image: url('https://flagcdn.com/${market.flag}.svg');"></div>
                 <div class="flex flex-col items-start justify-center flex-1 overflow-hidden">
                     <span class="text-sm font-semibold text-zinc-900 dark:text-white leading-tight truncate w-full text-left">${market.name}</span>
                     <span class="text-[11px] text-zinc-500 font-medium mt-0.5 truncate w-full text-left">${market.exchange}</span>
@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             div.addEventListener('click', () => {
                 appState.market = market;
-                selectedFlag.style.backgroundImage = `url('https://flagcdn.com/1x1/${market.flag}.svg')`;
+                selectedFlag.style.backgroundImage = `url('https://flagcdn.com/${market.flag}.svg')`;
                 countryDropdown.classList.remove('opacity-100', 'scale-100');
                 countryDropdown.classList.add('opacity-0', 'scale-95');
                 setTimeout(() => countryDropdown.classList.add('hidden'), 200);
