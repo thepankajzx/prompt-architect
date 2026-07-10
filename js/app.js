@@ -385,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (isPremium) {
             standardBtn.className = "px-2 md:px-4 py-1 text-zinc-500 dark:text-zinc-400 text-[10px] md:text-xs font-semibold rounded-full transition-colors cursor-default whitespace-nowrap";
-            premiumBtn.className = "px-2 md:px-4 py-1 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white text-[10px] md:text-xs font-bold rounded-full shadow-sm transition-colors flex items-center group whitespace-nowrap cursor-default";
+            premiumBtn.className = "glow-premium px-2 md:px-4 py-1 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white text-[10px] md:text-xs font-bold rounded-full shadow-sm transition-colors flex items-center group whitespace-nowrap cursor-default";
             premiumBtn.removeAttribute('href');
             premiumBtn.removeAttribute('target');
         } else {
@@ -445,7 +445,32 @@ document.addEventListener('DOMContentLoaded', () => {
             
             updateTierToggle(); // Update the header toggle
             
-            alert('Premium Unlocked Successfully! You now have unlimited access.');
+            // Trigger Confetti Animation
+            if(typeof confetti === 'function') {
+                const duration = 3000;
+                const end = Date.now() + duration;
+
+                (function frame() {
+                    confetti({
+                        particleCount: 5,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 },
+                        colors: ['#ca8a04', '#eab308', '#fef08a']
+                    });
+                    confetti({
+                        particleCount: 5,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 },
+                        colors: ['#ca8a04', '#eab308', '#fef08a']
+                    });
+
+                    if (Date.now() < end) {
+                        requestAnimationFrame(frame);
+                    }
+                }());
+            }
         } else {
             errorEl.classList.remove('hidden');
         }

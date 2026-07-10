@@ -6,6 +6,9 @@
     <title>Prompt Architect | Premium AI Financial Research</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icons/6.11.1/css/flag-icons.min.css" rel="stylesheet">
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <script>
@@ -68,6 +71,19 @@
 
         /* Hidden prompt area */
         #hidden-prompt-storage { display: none; }
+        
+        /* Premium Glow */
+        @keyframes premium-glow {
+            0% { box-shadow: 0 0 5px rgba(202,138,4,0.3); }
+            50% { box-shadow: 0 0 18px rgba(202,138,4,0.8); transform: scale(1.02); }
+            100% { box-shadow: 0 0 5px rgba(202,138,4,0.3); }
+        }
+        .glow-premium {
+            animation: premium-glow 2s infinite;
+        }
+        .glow-premium i {
+            filter: drop-shadow(0 0 5px rgba(202,138,4,0.8));
+        }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col bg-zinc-50 dark:bg-darkBase text-zinc-900 dark:text-zinc-300 bg-pattern transition-colors duration-300">
