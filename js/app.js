@@ -376,12 +376,48 @@ document.addEventListener('DOMContentLoaded', () => {
         appState.selectedMiniTabs = [];
     }
 
+    function updateTierToggle() {
+        const isPremium = localStorage.getItem('prompt_architect_premium') === 'true';
+        const standardBtn = document.getElementById('tier-standard-btn');
+        const premiumBtn = document.getElementById('tier-premium-btn');
+        
+        if (!standardBtn || !premiumBtn) return;
+        
+        if (isPremium) {
+            standardBtn.className = "px-2 md:px-4 py-1 text-zinc-500 dark:text-zinc-400 text-[10px] md:text-xs font-semibold rounded-full transition-colors cursor-default whitespace-nowrap";
+            premiumBtn.className = "px-2 md:px-4 py-1 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white text-[10px] md:text-xs font-bold rounded-full shadow-sm transition-colors flex items-center group whitespace-nowrap cursor-default";
+            premiumBtn.removeAttribute('href');
+            premiumBtn.removeAttribute('target');
+        } else {
+            standardBtn.className = "px-2 md:px-4 py-1 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white text-[10px] md:text-xs font-bold rounded-full shadow-sm cursor-default whitespace-nowrap";
+            premiumBtn.className = "px-2 md:px-4 py-1 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white text-[10px] md:text-xs font-semibold rounded-full transition-colors flex items-center group whitespace-nowrap cursor-pointer";
+            premiumBtn.href = "https://wa.me/7018168156?text=Hi!%20I%20want%20to%20subscribe%20to%20the%20Premium%20version%20of%20the%20AI%20Financial%20Research%20Architect.%20Please%20share%20the%20details.";
+            premiumBtn.target = "_blank";
+        }
+    }
+
     function showToast(el) {
         el.classList.remove('opacity-0', 'pointer-events-none');
-        setTimeout(() => {
+        
+        if (el.toastTimeout) clearTimeout(el.toastTimeout);
+        
+        el.toastTimeout = setTimeout(() => {
             el.classList.add('opacity-0', 'pointer-events-none');
         }, 5000);
     }
+    
+    // Add interaction listeners to keep toast open
+    ['max-cat-toast', 'premium-toast'].forEach(id => {
+        const toast = document.getElementById(id);
+        if(toast) {
+            toast.addEventListener('click', () => {
+                if(toast.toastTimeout) clearTimeout(toast.toastTimeout);
+            });
+            toast.addEventListener('focusin', () => {
+                if(toast.toastTimeout) clearTimeout(toast.toastTimeout);
+            });
+        }
+    });
     
     // Global function for onclick in HTML
     window.unlockPremium = function(inputId) {
@@ -406,6 +442,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 chip.style.opacity = '1';
                 chip.style.pointerEvents = 'auto';
             });
+            
+            updateTierToggle(); // Update the header toggle
             
             alert('Premium Unlocked Successfully! You now have unlimited access.');
         } else {
