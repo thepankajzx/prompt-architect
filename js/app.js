@@ -691,6 +691,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- Initialization ---
+    populateModels();
+    updateCategoryUI();
+    updateTierToggle();
+    if(typeof btnFormatText !== 'undefined') btnFormatText.click();
+
 });
 
 // Global toast hide function
