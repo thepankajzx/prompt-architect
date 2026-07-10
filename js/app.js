@@ -422,7 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Global function for onclick in HTML
     window.unlockPremium = function(inputId) {
         const input = document.getElementById(inputId);
-        const errorId = inputId.replace('input', 'error');
+        const errorId = inputId.replace('access-code-input', 'access-error');
         const errorEl = document.getElementById(errorId);
         
         if (input.value.trim().toUpperCase() === 'PANKAJ@PRO') {
