@@ -339,8 +339,9 @@ document.addEventListener('DOMContentLoaded', () => {
             appState.selectedCategories.splice(idx, 1);
             cardEl.classList.remove('selected');
         } else {
-            // Select (Max 2)
-            if (appState.selectedCategories.length >= 2) {
+            // Select (Max 2 if not premium)
+            const isPremium = localStorage.getItem('prompt_architect_premium') === 'true';
+            if (!isPremium && appState.selectedCategories.length >= 2) {
                 showToast(maxCatToast);
                 cardEl.style.animation = 'shake 0.4s';
                 setTimeout(() => cardEl.style.animation = '', 400);
@@ -355,11 +356,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateCategoryUI() {
         const count = appState.selectedCategories.length;
+        const isPremium = localStorage.getItem('prompt_architect_premium') === 'true';
         
         // Update unselected cards state (dim them if max reached)
         document.querySelectorAll('.cat-card').forEach(card => {
             if (!appState.selectedCategories.includes(card.dataset.id)) {
-                if (count >= 2) card.classList.add('disabled');
+                if (!isPremium && count >= 2) card.classList.add('disabled');
                 else card.classList.remove('disabled');
             }
         });
@@ -380,6 +382,36 @@ document.addEventListener('DOMContentLoaded', () => {
             el.classList.add('opacity-0', 'pointer-events-none');
         }, 5000);
     }
+    
+    // Global function for onclick in HTML
+    window.unlockPremium = function(inputId) {
+        const input = document.getElementById(inputId);
+        const errorId = inputId.replace('input', 'error');
+        const errorEl = document.getElementById(errorId);
+        
+        if (input.value.trim().toUpperCase() === 'PANKAJ@PRO') {
+            localStorage.setItem('prompt_architect_premium', 'true');
+            errorEl.classList.add('hidden');
+            input.value = '';
+            
+            // Hide toasts
+            hideToast('max-cat-toast');
+            hideToast('premium-toast');
+            
+            // Re-render the UI state immediately so users can continue clicking
+            updateCategoryUI();
+            
+            // Re-evaluate mini tabs
+            document.querySelectorAll('.mini-tab-chip').forEach(chip => {
+                chip.style.opacity = '1';
+                chip.style.pointerEvents = 'auto';
+            });
+            
+            alert('Premium Unlocked Successfully! You now have unlimited access.');
+        } else {
+            errorEl.classList.remove('hidden');
+        }
+    };
 
     function renderMiniTabs() {
         miniTabsContainer.innerHTML = '';
@@ -441,8 +473,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     appState.selectedMiniTabs.splice(exists, 1);
                     chip.classList.remove('selected');
                 } else {
-                    // Limit to 5 mini-tabs universally
-                    if (appState.selectedMiniTabs.length >= 5) {
+                    // Limit to 5 mini-tabs universally if not premium
+                    const isPremium = localStorage.getItem('prompt_architect_premium') === 'true';
+                    if (!isPremium && appState.selectedMiniTabs.length >= 5) {
                         showToast(premiumToast);
                         chip.style.animation = 'shake 0.4s';
                         setTimeout(() => chip.style.animation = '', 400);
