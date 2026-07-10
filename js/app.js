@@ -455,15 +455,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         particleCount: 5,
                         angle: 60,
                         spread: 55,
-                        origin: { x: 0 },
-                        colors: ['#ca8a04', '#eab308', '#fef08a']
+                        origin: { x: 0 }
                     });
                     confetti({
                         particleCount: 5,
                         angle: 120,
                         spread: 55,
-                        origin: { x: 1 },
-                        colors: ['#ca8a04', '#eab308', '#fef08a']
+                        origin: { x: 1 }
                     });
 
                     if (Date.now() < end) {
