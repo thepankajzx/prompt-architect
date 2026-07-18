@@ -507,9 +507,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const iconColor = catMeta.colorClass || 'text-accent';
 
         section.innerHTML = `
-            <div class="flex items-center mb-4 md:mb-6 pb-3 md:pb-4 border-b border-zinc-200 dark:border-darkBorder">
-                <i class="fas ${catMeta.icon} ${iconColor} text-lg md:text-xl mr-3"></i>
-                <h2 class="text-lg md:text-xl font-bold text-zinc-900 dark:text-white">${catMeta.title} Modules</h2>
+            <div class="flex items-center justify-between mb-4 md:mb-6 pb-3 md:pb-4 border-b border-zinc-200 dark:border-darkBorder">
+                <div class="flex items-center">
+                    <i class="fas ${catMeta.icon} ${iconColor} text-lg md:text-xl mr-3"></i>
+                    <h2 class="text-lg md:text-xl font-bold text-zinc-900 dark:text-white">${catMeta.title} Modules</h2>
+                </div>
+                <button id="select-all-${catMeta.id}" class="text-xs font-semibold text-accent hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
+                    Select All
+                </button>
             </div>
             <div class="flex flex-wrap gap-2 md:gap-3" id="chip-container-${catMeta.id}"></div>
         `;
@@ -517,7 +522,10 @@ document.addEventListener('DOMContentLoaded', () => {
         miniTabsContainer.appendChild(section);
         
         const chipContainer = section.querySelector(`#chip-container-${catMeta.id}`);
+        const selectAllBtn = section.querySelector(`#select-all-${catMeta.id}`);
         
+        const chipElements = []; // store references to update UI
+
         modules.forEach(mod => {
             const chip = document.createElement('button');
             chip.className = 'mini-tab-chip px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-darkBorder bg-zinc-50 dark:bg-transparent';
@@ -550,6 +558,29 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             chipContainer.appendChild(chip);
+            chipElements.push({ chip, mod });
+        });
+
+        // Implement Select All logic
+        selectAllBtn.addEventListener('click', () => {
+            let hitLimit = false;
+            chipElements.forEach(item => {
+                const exists = appState.selectedMiniTabs.findIndex(m => m.id === item.mod.id) > -1;
+                if (!exists) {
+                    const isPremium = localStorage.getItem('prompt_architect_premium') === 'true';
+                    if (!isPremium && appState.selectedMiniTabs.length >= 5) {
+                        hitLimit = true;
+                        return; // stop adding
+                    }
+                    appState.selectedMiniTabs.push(item.mod);
+                    item.chip.classList.add('selected');
+                }
+            });
+            miniTabError.classList.add('hidden');
+            
+            if (hitLimit) {
+                showToast(premiumToast);
+            }
         });
     }
 
