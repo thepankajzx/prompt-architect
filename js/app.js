@@ -36,8 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const globalMarkets = [
-        { id: 'US', flag: 'us', name: 'United States', exchange: 'NYSE / NASDAQ' },
         { id: 'IN', flag: 'in', name: 'India', exchange: 'NSE / BSE' },
+        { id: 'US', flag: 'us', name: 'United States', exchange: 'NYSE / NASDAQ' },
         { id: 'GB', flag: 'gb', name: 'United Kingdom', exchange: 'LSE' },
         { id: 'JP', flag: 'jp', name: 'Japan', exchange: 'TSE' },
         { id: 'CN', flag: 'cn', name: 'China', exchange: 'SSE / SZSE' },
@@ -505,6 +505,10 @@ document.addEventListener('DOMContentLoaded', () => {
         section.className = 'bg-white dark:bg-darkSurface border border-zinc-200 dark:border-darkBorder rounded-xl p-4 md:p-6 shadow-sm dark:shadow-md fade-in';
         
         const iconColor = catMeta.colorClass || 'text-accent';
+        let colorType = 'blue';
+        if (iconColor.includes('finGreen')) colorType = 'green';
+        else if (iconColor.includes('finRed')) colorType = 'red';
+        else if (iconColor.includes('finGold')) colorType = 'gold';
 
         section.innerHTML = `
             <div class="flex items-center justify-between mb-4 md:mb-6 pb-3 md:pb-4 border-b border-zinc-200 dark:border-darkBorder">
@@ -530,6 +534,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const chip = document.createElement('button');
             chip.className = 'mini-tab-chip px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-darkBorder bg-zinc-50 dark:bg-transparent';
             chip.textContent = mod.title;
+            chip.dataset.colorType = colorType;
             
             // Re-apply selected state if it exists
             if (appState.selectedMiniTabs.some(m => m.id === mod.id)) {
